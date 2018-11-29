@@ -34,5 +34,8 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+<<<<<<< HEAD
 
 Serveur/*
+=======
+>>>>>>> 9f13600d8a9e058201adebbea5732c101699feea
