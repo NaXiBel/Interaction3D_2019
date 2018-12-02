@@ -50,10 +50,12 @@ public class TouchManager : MonoBehaviour {
 
 	private void SpawnTeleportCursor() {
 
-		GameObject playerObject = GameObject.Find("LeftEyeAnchor");
-		Vector3 teleportCursorPosition = playerObject.transform.position + playerObject.transform.forward * 4;
+		GameObject playerEyeObject = GameObject.Find("LeftEyeAnchor");
+		GameObject playerObject = GameObject.Find("OVRPlayerController");
+		Vector3 teleportCursorPosition = playerEyeObject.transform.position + playerEyeObject.transform.forward * 4;
 		GameObject prefabTeleportCursor = Resources.Load("Prefabs/TeleportCursor") as GameObject;
 		this.m_TeleportCursor = Instantiate(prefabTeleportCursor, new Vector3(teleportCursorPosition.x, -2.34f, teleportCursorPosition.z), Quaternion.identity);
+		this.m_TeleportCursor.transform.parent = playerObject.transform;
 
 	}
 
@@ -67,8 +69,8 @@ public class TouchManager : MonoBehaviour {
 		BUG QUE FIFI DOIT RESOUDRE : Les offsets de déplacement se font selon le World.Space, il faut que je change ça par rapport à la cam' 
 	 */
 	private void MoveTeleportCursor(Vector2 axis2DValues) {
-		Vector3 newCursorPosition = new Vector3(this.m_TeleportCursor.transform.position.x + axis2DValues.x, this.m_TeleportCursor.transform.position.y, this.m_TeleportCursor.transform.position.z + axis2DValues.y);
-		this.m_TeleportCursor.transform.position = newCursorPosition;
+		Vector3 newCursorPosition = this.m_TeleportCursor.transform.localPosition + new Vector3(axis2DValues.x, 0.0f, axis2DValues.y);
+		this.m_TeleportCursor.transform.localPosition = newCursorPosition;
 
 	}
 
