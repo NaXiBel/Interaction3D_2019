@@ -1,22 +1,17 @@
 /************************************************************************************
+Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
 
-Copyright   :   Copyright 2017 Oculus VR, LLC. All Rights reserved.
-
-Licensed under the Oculus VR Rift SDK License Version 3.4.1 (the "License");
-you may not use the Oculus VR Rift SDK except in compliance with the License,
-which is provided at the time of installation or download, or which
-otherwise accompanies this software in either electronic or hard copy form.
+Licensed under the Oculus Utilities SDK License Version 1.31 (the "License"); you may not use
+the Utilities SDK except in compliance with the License, which is provided at the time of installation
+or download, or which otherwise accompanies this software in either electronic or hard copy form.
 
 You may obtain a copy of the License at
+https://developer.oculus.com/licenses/utilities-1.31
 
-https://developer.oculus.com/licenses/sdk-3.4.1
-
-Unless required by applicable law or agreed to in writing, the Oculus VR SDK
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Unless required by applicable law or agreed to in writing, the Utilities SDK distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+ANY KIND, either express or implied. See the License for the specific language governing
+permissions and limitations under the License.
 ************************************************************************************/
 
 using System;
@@ -36,11 +31,14 @@ public class OVRGrabbable : MonoBehaviour
     [SerializeField]
     protected Transform m_snapOffset;
     [SerializeField]
-    protected Collider[] m_grabPoints = null;
+    protected Collider[] m_grabPoints;
 
     protected bool m_grabbedKinematic = false;
     protected Collider m_grabbedCollider = null;
     protected OVRGrabber m_grabbedBy = null;
+
+    // GrapPoints has been initialized ?
+    private bool m_gpHasBeenInitizialized = false;
 
 	/// <summary>
 	/// If true, the object can currently be grabbed.
@@ -131,26 +129,24 @@ public class OVRGrabbable : MonoBehaviour
     {
         Rigidbody rb = gameObject.GetComponent<Rigidbody>();
         rb.isKinematic = m_grabbedKinematic;
-        rb.velocity = linearVelocity;
-        rb.angularVelocity = angularVelocity;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         m_grabbedBy = null;
         m_grabbedCollider = null;
     }
 
     void Awake()
-    {
-        if (m_grabPoints.Length == 0)
+    {   
+        // Get the collider from the grabbable
+        Collider collider = this.GetComponent<Collider>();
+        if (collider == null)
         {
-            // Get the collider from the grabbable
-            Collider collider = this.GetComponent<Collider>();
-            if (collider == null)
-            {
-				throw new ArgumentException("Grabbables cannot have zero grab points and no collider -- please add a grab point or collider.");
-            }
-
-            // Create a default grab point
-            m_grabPoints = new Collider[1] { collider };
+            throw new ArgumentException("Grabbables cannot have zero grab points and no collider -- please add a grab point or collider.");
         }
+
+        // Create a default grab point
+        m_grabPoints = new Collider[1] { collider };
+
     }
 
     protected virtual void Start()
@@ -158,6 +154,10 @@ public class OVRGrabbable : MonoBehaviour
         m_grabbedKinematic = GetComponent<Rigidbody>().isKinematic;
     }
 
+    
+    void Update() {
+        Debug.Log(m_grabPoints);
+    }
     void OnDestroy()
     {
         if (m_grabbedBy != null)
