@@ -53,8 +53,8 @@ public class TouchManager : MonoBehaviour {
 		GameObject playerEyeObject = GameObject.Find("LeftEyeAnchor");
 		GameObject playerObject = GameObject.Find("OVRPlayerController");
 		Vector3 teleportCursorPosition = playerEyeObject.transform.position + playerEyeObject.transform.forward * 4;
-		GameObject prefabTeleportCursor = Resources.Load("Prefabs/TeleportCursor") as GameObject;
-		this.m_TeleportCursor = Instantiate(prefabTeleportCursor, new Vector3(teleportCursorPosition.x, -2.34f, teleportCursorPosition.z), Quaternion.identity);
+		GameObject prefabTeleportCursor = Resources.Load("Prefabs/magic_ring_01") as GameObject;
+		this.m_TeleportCursor = Instantiate(prefabTeleportCursor, new Vector3(teleportCursorPosition.x, -2.34f, teleportCursorPosition.z), Quaternion.Euler(-90, 0, 0));
 		this.m_TeleportCursor.transform.parent = playerObject.transform;
 
 	}

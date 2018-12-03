@@ -16,9 +16,9 @@ Shader "OvrAvatar/Avatar_PC_SingleComponent"
         [NoScaleOffset] _NormalMap("Normal Map", 2D) = "bump" {}
         [NoScaleOffset] _RoughnessMap("Roughness Map", 2D) = "black" {}
 
-        _BaseColor("Color Tint", Color) = (0.95,0.77,0.63)
-        _Dimmer("Dimmer", Range(0.0,1.0)) = 1.0
-        _Alpha("Alpha", Range(0.0,1.0)) = 1.0
+        _BaseColor("Color Tint", Color) = (0.5, 0.5, 0.5, 1)
+        _Dimmer("Dimmer", Range(0.0,1.0)) = 0.5
+        _Alpha("Alpha", Range(0.0,1.0)) = 0.3
 
         _DiffuseIntensity("Diffuse Intensity", Range(0.0,1.0)) = 0.3
         _RimIntensity("Rim Intensity", Range(0.0,10.0)) = 5.0

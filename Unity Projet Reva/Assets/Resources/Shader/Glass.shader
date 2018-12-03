@@ -18,12 +18,19 @@
 		}
 			SubShader{
 			// This will be a transparent material
+					LOD 100
+		Blend SrcAlpha OneMinusSrcAlpha
 			Tags {
 				"Queue" = "Transparent"
 				"IgnoreProjector" = "True"
 				"RenderType" = "Transparent"
 			}
+			Pass
+			{
+				Color(0,0,0,0)
+			}
 			CGPROGRAM
+			
 			// Use surface shader with function called "surf"
 			// Use the inbuilt BlinnPhong lighting model
 			// Use alpha blending
