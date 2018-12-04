@@ -42,7 +42,7 @@ public class TouchManager : MonoBehaviour {
 			=> on fait disparaître le curseur
 		 */
 		if(OVRInput.GetUp(OVRInput.Button.PrimaryThumbstick)) {
-			TeleportPlayer();
+		//	TeleportPlayer();
 			Destroy(m_TeleportCursor);
 			this.m_TeleportCursor = null;
 		}
@@ -53,10 +53,10 @@ public class TouchManager : MonoBehaviour {
 		GameObject playerEyeObject = GameObject.Find("LeftEyeAnchor");
 		GameObject playerObject = GameObject.Find("OVRPlayerController");
 		Vector3 teleportCursorPosition = playerEyeObject.transform.position + playerEyeObject.transform.forward * 4;
-		GameObject prefabTeleportCursor = Resources.Load("Prefabs/magic_ring_01") as GameObject;
+		/*GameObject prefabTeleportCursor = Resources.Load("Prefabs/magic_ring_01") as GameObject;
 		this.m_TeleportCursor = Instantiate(prefabTeleportCursor, new Vector3(teleportCursorPosition.x, -2.34f, teleportCursorPosition.z), Quaternion.Euler(-90, 0, 0));
 		this.m_TeleportCursor.transform.parent = playerObject.transform;
-
+        */
 	}
 
 	/**
@@ -77,11 +77,11 @@ public class TouchManager : MonoBehaviour {
 	/**
 		Le joueur est téléporté à l'endroit du curseur
 	 */
-	private void TeleportPlayer() {
+	/*private void TeleportPlayer() {
 		GameObject playerObject = GameObject.Find("OVRPlayerController");
 		Vector3 newPlayerPosition = new Vector3(this.m_TeleportCursor.transform.position.x, 0.97f, this.m_TeleportCursor.transform.position.z);
 		playerObject.transform.position = newPlayerPosition;
-	}
+	}*/
 
 
 }

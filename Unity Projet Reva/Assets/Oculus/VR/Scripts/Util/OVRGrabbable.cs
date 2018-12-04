@@ -39,7 +39,7 @@ public class OVRGrabbable : MonoBehaviour
 
     // GrapPoints has been initialized ?
     private bool m_gpHasBeenInitizialized = false;
-
+    private GameObject m_GrabbedPoint;
 	/// <summary>
 	/// If true, the object can currently be grabbed.
 	/// </summary>
@@ -120,6 +120,8 @@ public class OVRGrabbable : MonoBehaviour
         m_grabbedBy = hand;
         m_grabbedCollider = grabPoint;
         gameObject.GetComponent<Rigidbody>().isKinematic = true;
+        grabPoint.gameObject.GetComponent<Renderer>().material = Resources.Load<Material>("Materials/ControlGrab");
+        m_GrabbedPoint = grabPoint.gameObject;
     }
 
 	/// <summary>
@@ -133,6 +135,8 @@ public class OVRGrabbable : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
         m_grabbedBy = null;
         m_grabbedCollider = null;
+        m_GrabbedPoint.gameObject.GetComponent<Renderer>().material = Resources.Load<Material>("Materials/Control");
+
     }
 
     void Awake()
