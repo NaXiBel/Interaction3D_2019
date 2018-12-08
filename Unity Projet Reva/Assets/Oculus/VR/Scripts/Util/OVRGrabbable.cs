@@ -160,7 +160,7 @@ public class OVRGrabbable : MonoBehaviour
 
     
     void Update() {
-        Debug.Log(m_grabPoints);
+//        Debug.Log(m_grabPoints);
     }
     void OnDestroy()
     {

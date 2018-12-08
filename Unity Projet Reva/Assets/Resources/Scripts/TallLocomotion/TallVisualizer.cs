@@ -36,7 +36,7 @@ public class TallVisualizer : ArcVisualizer {
 		}
         GameObject prefabTeleportCursor = Resources.Load("Prefabs/magic_ring_01") as GameObject;
         m_TeleportCursor = Instantiate(prefabTeleportCursor, arcRaycaster.HitPoint, Quaternion.Euler(-90, 0, 0));
-
+        m_TeleportCursor.transform.parent = this.gameObject.transform;
     }
 
     void Update() {
@@ -77,5 +77,6 @@ public class TallVisualizer : ArcVisualizer {
         GameObject playerObject = GameObject.Find("OVRPlayerController");
         Vector3 newPlayerPosition = new Vector3(this.m_TeleportCursor.transform.position.x, 0.97f, this.m_TeleportCursor.transform.position.z);
         playerObject.transform.position = newPlayerPosition;
+
     }
 }

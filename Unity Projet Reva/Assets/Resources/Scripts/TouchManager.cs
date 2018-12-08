@@ -5,47 +5,56 @@ using UnityEngine;
 public class TouchManager : MonoBehaviour {
 
 	public GameObject m_TeleportCursor = null;
-
+    private bool m_TeleportMode;
 	// Use this for initialization
 	void Start () {
-		
+        m_TeleportMode = false;
 	}
-	
-	
-	void Update () {
 
-		/**
+
+    void Update() {
+
+        /**
 			Pression du joystick gauche
 			=> on fait apparaître le curseur de déplacement
 		 */
-		if(OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick)) {
-			Debug.Log(GameObject.Find("LeftEyeAnchor"));
-			SpawnTeleportCursor();
-		}
-
-		/**
+        if (m_TeleportMode == false)
+        {
+            if (OVRInput.GetDown(OVRInput.RawButton.X))
+            {
+                //Debug.Log("Create");
+                m_TeleportMode = true;
+                SpawnTeleportCursor();
+            }
+        }
+        /**
+			Le joystick gauche n'est plus appuyé :
+			=> on fait disparaître le curseur
+		 */
+        else { 
+            if (OVRInput.GetDown(OVRInput.RawButton.X))
+            {
+                //	TeleportPlayer();
+                Destroy(m_TeleportCursor);
+                this.m_TeleportCursor = null;
+                m_TeleportMode = false;
+            }
+        }
+        /**
 			Appui du joystick gauche (en continu)
 			=> on déplace le curseur on fonction de l'état de l'axe 2D du joystick
 		 */
-		if(this.m_TeleportCursor != null) {
+        if (this.m_TeleportCursor != null) {
 			if(OVRInput.Get(OVRInput.Button.PrimaryThumbstick)) {
 				Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
 				if(axis2DLeftThumbstick != null) {
-					MoveTeleportCursor(axis2DLeftThumbstick);
+		//			MoveTeleportCursor(axis2DLeftThumbstick);
 				}
 			}
 		}
 
 
-		/**
-			Le joystick gauche n'est plus appuyé :
-			=> on fait disparaître le curseur
-		 */
-		if(OVRInput.GetUp(OVRInput.Button.PrimaryThumbstick)) {
-		//	TeleportPlayer();
-			Destroy(m_TeleportCursor);
-			this.m_TeleportCursor = null;
-		}
+
 	}
 
 	private void SpawnTeleportCursor() {
@@ -53,10 +62,10 @@ public class TouchManager : MonoBehaviour {
 		GameObject playerEyeObject = GameObject.Find("LeftEyeAnchor");
 		GameObject playerObject = GameObject.Find("OVRPlayerController");
 		Vector3 teleportCursorPosition = playerEyeObject.transform.position + playerEyeObject.transform.forward * 4;
-		/*GameObject prefabTeleportCursor = Resources.Load("Prefabs/magic_ring_01") as GameObject;
+		GameObject prefabTeleportCursor = Resources.Load("Prefabs/TallLocomotion") as GameObject;
 		this.m_TeleportCursor = Instantiate(prefabTeleportCursor, new Vector3(teleportCursorPosition.x, -2.34f, teleportCursorPosition.z), Quaternion.Euler(-90, 0, 0));
 		this.m_TeleportCursor.transform.parent = playerObject.transform;
-        */
+        
 	}
 
 	/**
@@ -68,11 +77,11 @@ public class TouchManager : MonoBehaviour {
 
 		BUG QUE FIFI DOIT RESOUDRE : Les offsets de déplacement se font selon le World.Space, il faut que je change ça par rapport à la cam' 
 	 */
-	private void MoveTeleportCursor(Vector2 axis2DValues) {
+/*	private void MoveTeleportCursor(Vector2 axis2DValues) {
 		Vector3 newCursorPosition = this.m_TeleportCursor.transform.localPosition + new Vector3(axis2DValues.x, 0.0f, axis2DValues.y);
 		this.m_TeleportCursor.transform.localPosition = newCursorPosition;
 
-	}
+	}*/
 
 	/**
 		Le joueur est téléporté à l'endroit du curseur
