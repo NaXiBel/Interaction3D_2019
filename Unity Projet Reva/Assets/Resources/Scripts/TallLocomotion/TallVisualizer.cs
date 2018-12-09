@@ -46,6 +46,8 @@ public class TallVisualizer : ArcVisualizer {
 		}
 		#endif
 
+
+
 		float horizontalDistance = raycaster.HorizontalDistance;
 		float maxDistance = raycaster.MaxDistnce;
 
@@ -57,11 +59,6 @@ public class TallVisualizer : ArcVisualizer {
 		}
         m_TeleportCursor.transform.position = arcRaycaster.HitPoint;
         SetCurveVisuals();
-
-        if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick))
-        {
-            TeleportPlayer();
-        }
     }
 
 	Vector3 SampleCurve(Vector3 start, Vector3 end, float time, float horizontalDistance, float maxDistance) {
@@ -72,11 +69,5 @@ public class TallVisualizer : ArcVisualizer {
 		return Vector3.Lerp(Vector3.Lerp(start, middle, time), Vector3.Lerp(middle, end, time), time);
 	}
 
-    private void TeleportPlayer()
-    {
-        GameObject playerObject = GameObject.Find("OVRPlayerController");
-        Vector3 newPlayerPosition = new Vector3(this.m_TeleportCursor.transform.position.x, 0.97f, this.m_TeleportCursor.transform.position.z);
-        playerObject.transform.position = newPlayerPosition;
 
-    }
 }
