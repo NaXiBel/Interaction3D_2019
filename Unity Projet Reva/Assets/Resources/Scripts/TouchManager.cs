@@ -5,45 +5,167 @@ using UnityEngine;
 public class TouchManager : MonoBehaviour {
 
 	public GameObject m_TeleportCursor = null;
-    // Use this for initialization
-	void Start () {
+    public GameObject m_SelectionRay = null;
+
+    private GameObject m_Selected = null;
+
+    // Temporaire, amené à changer
+    private GameObject m_BSpline = null;
+    private enum SelectionStates {
+        NONE,
+        RAY,
+        HAND
     }
 
-
+    private SelectionStates m_State = SelectionStates.NONE;
+    // Use this for initialization
+    private ControllerSelection.OVRRawRaycaster m_RayHandlerScript = null;
+	void Start () {
+        this.m_RayHandlerScript = this.GetComponent<ControllerSelection.OVRRawRaycaster>();
+        this.m_RayHandlerScript.enabled = false;
+        this.m_SelectionRay.SetActive(false);
+        this.m_State = SelectionStates.NONE;
+        this.m_BSpline = GameObject.Find("Controller");
+    }
     void Update() {
-        /** 
-            Utilisation de A et B pour monter ou descendre 
-         */
-        if (OVRInput.GetDown(OVRInput.RawButton.B))
-        {
-            GameObject playerObject = GameObject.Find("OVRPlayerController");
-            playerObject.transform.Translate(0f, 0.3f, 0f);
-        }
-        if (OVRInput.GetDown(OVRInput.RawButton.A))
-        {
-            GameObject playerObject = GameObject.Find("OVRPlayerController");
-            playerObject.transform.Translate(0f, -0.3f, 0f);
-        }
-        /**
-			Pression du joystick gauche
-			=> on fait apparaître le curseur de déplacement
-		 */
 
-        if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick))
-        {
-            //Debug.Log("Create");
-            SpawnTeleportCursor();
+        if(this.m_State == SelectionStates.NONE) {
+
+                if(OVRInput.Get(OVRInput.RawButton.A)) {
+                    Debug.Log("OK");
+                        
+                    Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
+                    if(axis2DLeftThumbstick != null) {
+                        MoveBSpline(axis2DLeftThumbstick);
+                    }
+                    
+                } else if(OVRInput.Get(OVRInput.RawButton.B)) {
+                    Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
+                    if(axis2DLeftThumbstick != null) {
+                        RotateBSpline(axis2DLeftThumbstick);
+                    }
+                }
+                /** 
+                    Utilisation de A et B pour monter ou descendre 
+                */
+                if (OVRInput.GetDown(OVRInput.RawButton.Y)) {
+                    GameObject playerObject = GameObject.Find("OVRPlayerController");
+                    playerObject.transform.Translate(0f, 0.3f, 0f);
+                }
+                if (OVRInput.GetDown(OVRInput.RawButton.X)) {
+                    GameObject playerObject = GameObject.Find("OVRPlayerController");
+                    playerObject.transform.Translate(0f, -0.3f, 0f);
+                }
+                /**
+                    Pression du joystick gauche
+                    => on fait apparaître le curseur de déplacement
+                */
+
+                if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick)) {
+                    //Debug.Log("Create");
+                    SpawnTeleportCursor();
+                }
+                /**
+                    Le joystick gauche n'est plus appuyé :
+                    => on fait disparaître le curseur
+                */
+                if (OVRInput.GetUp(OVRInput.Button.PrimaryThumbstick)) {
+                    TeleportPlayer();
+                    Destroy(m_TeleportCursor);
+                    this.m_TeleportCursor = null;
+                }
+            
+        } else {
+            /**
+            
+                Gestion du rayon de sélection
+                Si l'index droit est levé et (état sélection main)
+                => on active le script / l'objet du rayon dans notre main |ETAT SELECTION RAYON
+
+                Si l'index droit est collé à la cachette, (état sélection rayon)
+                => on désactive le script / l'objet du rayon dans notre main |ETAT SELECTION RAYON
+            */
+            if(!OVRInput.Get(OVRInput.NearTouch.SecondaryIndexTrigger) && this.m_State == SelectionStates.HAND) {
+                this.m_SelectionRay.SetActive(true);
+                this.m_RayHandlerScript.enabled = true;
+                this.m_State = SelectionStates.RAY;
+
+            } else if(OVRInput.Get(OVRInput.NearTouch.SecondaryIndexTrigger) && this.m_State == SelectionStates.RAY) {
+                this.m_SelectionRay.SetActive(false);
+                this.m_RayHandlerScript.enabled = false;
+                this.m_State = SelectionStates.HAND;
+
+            }
+
+            if(this.m_State == SelectionStates.HAND) {
+                /** 
+                    Utilisation de A et B pour monter ou descendre 
+                */
+                if (OVRInput.GetDown(OVRInput.RawButton.Y)) {
+                    GameObject playerObject = GameObject.Find("OVRPlayerController");
+                    playerObject.transform.Translate(0f, 0.3f, 0f);
+                }
+                if (OVRInput.GetDown(OVRInput.RawButton.X)) {
+                    GameObject playerObject = GameObject.Find("OVRPlayerController");
+                    playerObject.transform.Translate(0f, -0.3f, 0f);
+                }
+                /**
+                    Pression du joystick gauche
+                    => on fait apparaître le curseur de déplacement
+                */
+
+                if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick)) {
+                    //Debug.Log("Create");
+                    SpawnTeleportCursor();
+                }
+                /**
+                    Le joystick gauche n'est plus appuyé :
+                    => on fait disparaître le curseur
+                */
+                if (OVRInput.GetUp(OVRInput.Button.PrimaryThumbstick)) {
+                    TeleportPlayer();
+                    Destroy(m_TeleportCursor);
+                    this.m_TeleportCursor = null;
+                }
+            } else if(this.m_State == SelectionStates.RAY) {
+                /** 
+                    Utilisation de A et B pour monter ou descendre 
+                */
+                if (OVRInput.GetDown(OVRInput.RawButton.Y)) {
+                    GameObject playerObject = GameObject.Find("OVRPlayerController");
+                    playerObject.transform.Translate(0f, 0.3f, 0f);
+                }
+                if (OVRInput.GetDown(OVRInput.RawButton.X)) {
+                    GameObject playerObject = GameObject.Find("OVRPlayerController");
+                    playerObject.transform.Translate(0f, -0.3f, 0f);
+                }
+                /**
+                    Pression du joystick gauche
+                    => on fait apparaître le curseur de déplacement
+                */
+
+                if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick)) {
+                    //Debug.Log("Create");
+                    SpawnTeleportCursor();
+                }
+                /**
+                    Le joystick gauche n'est plus appuyé :
+                    => on fait disparaître le curseur
+                */
+                if (OVRInput.GetUp(OVRInput.Button.PrimaryThumbstick)) {
+                    TeleportPlayer();
+                    Destroy(m_TeleportCursor);
+                    this.m_TeleportCursor = null;
+                }
+            }
+            
         }
-        /**
-			Le joystick gauche n'est plus appuyé :
-			=> on fait disparaître le curseur
-		 */
-        if (OVRInput.GetUp(OVRInput.Button.PrimaryThumbstick))
-        {
-            TeleportPlayer();
-            Destroy(m_TeleportCursor);
-            this.m_TeleportCursor = null;
-        }
+
+
+
+
+
+
         /**
 			Appui du joystick gauche (en continu)
 			=> on déplace le curseur on fonction de l'état de l'axe 2D du joystick
@@ -100,4 +222,16 @@ public class TouchManager : MonoBehaviour {
 
     }
 
+    // Temporaire, amenée à changer
+    private void MoveBSpline(Vector2 axis2DValues) {
+        Debug.Log(axis2DValues);
+        GameObject playerObject = GameObject.Find("OVRPlayerController");
+        Vector3 move = new Vector3(axis2DValues.x, 0.0f, axis2DValues.y) * 0.2f; 
+        this.m_BSpline.transform.Translate(move, playerObject.transform);
+    }
+
+    private void RotateBSpline(Vector2 axis2DValues) {
+        Vector3 move = new Vector3(axis2DValues.y, axis2DValues.x, 0.0f); 
+        this.m_BSpline.transform.Rotate(move);
+    }
 }

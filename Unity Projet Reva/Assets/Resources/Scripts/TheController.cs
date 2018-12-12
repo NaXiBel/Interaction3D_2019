@@ -30,6 +30,10 @@ public class TheController : MonoBehaviour {
         maSpline = new GameObject("Bspline");
         maSpline.AddComponent<MeshFilter>();
         maSpline.AddComponent<MeshRenderer>();
+        maSpline.AddComponent<Rigidbody>();
+        maSpline.GetComponent<Rigidbody>().useGravity = false;
+        maSpline.GetComponent<Rigidbody>().isKinematic = true;
+        maSpline.AddComponent<MeshCollider>();
         maSpline.GetComponent<Renderer>().material = Resources.Load("Materials/B_Spline", typeof(Material)) as Material;
         maSpline.layer = 10;
         maSpline.AddComponent<Bspline>();
@@ -73,7 +77,8 @@ public class TheController : MonoBehaviour {
             //changement de la taille des points de controle
             go.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             go.AddComponent<Rigidbody>();
-            go.GetComponent<Rigidbody>().useGravity = false;            
+            go.GetComponent<Rigidbody>().useGravity = false;      
+            go.GetComponent<Rigidbody>().isKinematic = true;      
             go.GetComponent<Renderer>().material = Resources.Load("Materials/Control", typeof(Material)) as Material;
             go.transform.parent = this.transform;
 
@@ -82,6 +87,7 @@ public class TheController : MonoBehaviour {
             go.AddComponent<OVRGrabbable>();
             go.GetComponent<OVRGrabbable>().enabled = true;
             go.AddComponent<Point>();
+            
         }
     }
 
@@ -124,6 +130,7 @@ public class TheController : MonoBehaviour {
             maSpline.GetComponent<Bspline>().ycontr[i] = tab[i].transform.position.y;
             maSpline.GetComponent<Bspline>().zcontr[i] = tab[i].transform.position.z;
         }
+        maSpline.GetComponent<MeshCollider>().sharedMesh = maSpline.GetComponent<MeshFilter>().mesh;
         //mise a jour de la surface
         maSpline.GetComponent<Bspline>().Calc();
         //maSpline.GetComponent<MeshFilter>().mesh.RecalculateNormals();

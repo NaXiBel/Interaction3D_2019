@@ -29,4 +29,12 @@ public class Point : MonoBehaviour
         Vector3 displayedPosition = this.transform.position;
         this.m_TextCoord.GetComponent<TextMesh>().text = "(" + displayedPosition.x + ", " + displayedPosition.y + ", " + displayedPosition.z + ")";
     }
+
+    public static void OnHoverEnter(Transform ray) {
+
+    }
+
+    public static void OnHoverExit(Transform ray) {
+
+    }
 }
