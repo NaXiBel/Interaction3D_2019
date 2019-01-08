@@ -25,7 +25,18 @@ public class TheController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        
+         GameObject controller;
+        switch (Const.Controller)
+        {
+            case (int)Const.ControllerName.Oculus:
+                controller = (GameObject)Instantiate(Resources.Load("Prefabs/OculusController"));
+                break;
+            case (int)Const.ControllerName.LeapMotion:
+                
+                controller = (GameObject)Instantiate(Resources.Load("Prefabs/LeapMotionController"));
+                break;
+        }
+
         //creation de l'objet modelisant la surface Bspline
         maSpline = new GameObject("Bspline");
         maSpline.AddComponent<MeshFilter>();
@@ -80,6 +91,12 @@ public class TheController : MonoBehaviour {
             go.GetComponent<Rigidbody>().useGravity = false;      
             go.GetComponent<Rigidbody>().isKinematic = true;      
             go.GetComponent<Renderer>().material = Resources.Load("Materials/Control", typeof(Material)) as Material;
+
+            // si on a la leap on ajoute le script qui permet de grapper les points de contrôles
+            if (Const.Controller == (int)Const.ControllerName.LeapMotion)
+            {
+                go.AddComponent<Leap.Unity.Interaction.InteractionBehaviour>();
+            }
             go.transform.parent = this.transform;
 
             tab[i] = go;
