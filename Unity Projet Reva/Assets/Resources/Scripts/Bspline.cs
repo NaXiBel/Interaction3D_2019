@@ -37,7 +37,7 @@ public class Bspline : MonoBehaviour
     {
 
         //nombre de points en u et v
-        nu = nv = 5;
+        nu = nv = (int)Math.Sqrt(Const.m_NumberControlPoints);
 
         //initialisation de points de contrôle par defaut
         xcontr = new float[nu * nv];

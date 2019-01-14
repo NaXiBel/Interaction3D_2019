@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TheController : MonoBehaviour {
     public GameObject translation;
@@ -30,9 +31,11 @@ public class TheController : MonoBehaviour {
         {
             case (int)Const.ControllerName.Oculus:
                 controller = (GameObject)Instantiate(Resources.Load("Prefabs/OculusController"));
+                GameObject eye = GameObject.Find("CenterEyeAnchor");
+                GameObject touchEvent = GameObject.Find("TouchEvent");
+                touchEvent.GetComponent<OVRInputModule>().rayTransform = eye.transform;
                 break;
             case (int)Const.ControllerName.LeapMotion:
-                
                 controller = (GameObject)Instantiate(Resources.Load("Prefabs/LeapMotionController"));
                 break;
         }
@@ -51,17 +54,17 @@ public class TheController : MonoBehaviour {
         maSpline.GetComponent<Bspline>().Start();
         //maSpline.AddComponent(Type.GetType("Resources/NoSharedVertices"));
         //initialisation des points de controle
-        tab = new GameObject[25];
+        tab = new GameObject[Const.m_NumberControlPoints];
         InitiateTab();
 
         //initialisation des lignes entre les points
-        lines = new GameObject[5*4*2];
+        lines = new GameObject[(int)Math.Sqrt(Const.m_NumberControlPoints) * 4*2];
         Gradient gradient = new Gradient();
         gradient.SetKeys(
             new GradientColorKey[] { new GradientColorKey(Color.white, 0.0f), new GradientColorKey(Color.white, 1.0f) },
             new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f) }
             );
-        for (int i = 0; i < 5 * 4 * 2; i++)
+        for (int i = 0; i < (int)Math.Sqrt(Const.m_NumberControlPoints) * 4 * 2; i++)
         {
             lines[i] = new GameObject(String.Format("Ligne {0}", i));
             lines[i].AddComponent<LineRenderer>();
@@ -81,7 +84,7 @@ public class TheController : MonoBehaviour {
     //initialise les points de controle
     void InitiateTab()
     {
-        for (int i = 0; i < 25; i++)
+        for (int i = 0; i < Const.m_NumberControlPoints; i++)
         {
             go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             go.transform.position = new Vector3(maSpline.GetComponent<Bspline>().xcontr[i], maSpline.GetComponent<Bspline>().ycontr[i], maSpline.GetComponent<Bspline>().zcontr[i]);
@@ -104,7 +107,8 @@ public class TheController : MonoBehaviour {
             go.AddComponent<OVRGrabbable>();
             go.GetComponent<OVRGrabbable>().enabled = true;
             go.AddComponent<Point>();
-            
+            go.GetComponent<Point>().Indice = i;
+           // Const.m_ControlPoints.Add(go); // only test
         }
     }
 
@@ -112,7 +116,7 @@ public class TheController : MonoBehaviour {
     void UpdateLines()
     {
         int ind = 0;
-        for(int i = 0; i < 25; i++)
+        for(int i = 0; i < Const.m_NumberControlPoints; i++)
         {
             if(i < 20)
             {
@@ -128,6 +132,24 @@ public class TheController : MonoBehaviour {
             }
         }
     }
+    
+    public void RemovePoint(int indice)
+    {
+
+        for (int i = indice; i < Const.m_NumberControlPoints - 1; ++i)
+        {
+            maSpline.GetComponent<Bspline>().xcontr[i] = maSpline.GetComponent<Bspline>().xcontr[i + 1];
+            maSpline.GetComponent<Bspline>().ycontr[i] = maSpline.GetComponent<Bspline>().ycontr[i + 1];
+            maSpline.GetComponent<Bspline>().zcontr[i] = maSpline.GetComponent<Bspline>().zcontr[i + 1];
+            tab[i] = tab[i + 1];
+        }
+        maSpline.GetComponent<Bspline>().xcontr[Const.m_NumberControlPoints - 1] = 0;
+        maSpline.GetComponent<Bspline>().ycontr[Const.m_NumberControlPoints - 1] = 0;
+        maSpline.GetComponent<Bspline>().zcontr[Const.m_NumberControlPoints - 1] = 0;
+        tab[Const.m_NumberControlPoints - 1] = null;
+
+        UpdateLines();
+    }
 
     // Update is called once per frame
     void FixedUpdate()
@@ -141,8 +163,9 @@ public class TheController : MonoBehaviour {
         //tranTampon = translation.transform.position;
 
         //mise a jour des points de controles
-        for(int i = 0; i < 25; i++)
+        for(int i = 0; i < Const.m_NumberControlPoints; i++)
         {
+
             maSpline.GetComponent<Bspline>().xcontr[i] = tab[i].transform.position.x;
             maSpline.GetComponent<Bspline>().ycontr[i] = tab[i].transform.position.y;
             maSpline.GetComponent<Bspline>().zcontr[i] = tab[i].transform.position.z;

@@ -6,7 +6,8 @@ public class TouchManager : MonoBehaviour {
 
 	public GameObject m_TeleportCursor = null;
     public GameObject m_SelectionRay = null;
-
+    public GameObject m_Menu = null;
+    public GameObject m_Camera = null;
     private GameObject m_Selected = null;
 
     // Temporaire, amené à changer
@@ -26,10 +27,17 @@ public class TouchManager : MonoBehaviour {
         this.m_SelectionRay.SetActive(false);
         this.m_State = SelectionStates.NONE;
         this.m_BSpline = GameObject.Find("Controller");
+        m_Camera = GameObject.FindGameObjectWithTag("Camera");
+        m_Menu = GameObject.FindGameObjectWithTag("Menu");
     }
     void Update() {
 
-        if(this.m_State == SelectionStates.NONE) {
+        if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) || OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+        {
+            m_Menu.GetComponent<Canvas>().enabled = true;
+            m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y - 0.5f, m_Camera.transform.position.z + 1f);
+        }
+        if (this.m_State == SelectionStates.NONE) {
 
                 if(OVRInput.Get(OVRInput.RawButton.A)) {
                     Debug.Log("OK");
@@ -127,6 +135,7 @@ public class TouchManager : MonoBehaviour {
                     Destroy(m_TeleportCursor);
                     this.m_TeleportCursor = null;
                 }
+
             } else if(this.m_State == SelectionStates.RAY) {
                 /** 
                     Utilisation de A et B pour monter ou descendre 
@@ -157,6 +166,8 @@ public class TouchManager : MonoBehaviour {
                     Destroy(m_TeleportCursor);
                     this.m_TeleportCursor = null;
                 }
+
+
             }
             
         }

@@ -7,7 +7,8 @@ public class Point : MonoBehaviour
     // Use this for initialization
 
     private GameObject m_TextCoord = null;
-    
+    private int m_Indice;
+
     void Start()
     {
         this.m_TextCoord = new GameObject();
@@ -36,5 +37,17 @@ public class Point : MonoBehaviour
 
     public static void OnHoverExit(Transform ray) {
 
+    }
+
+    public int Indice
+    {
+        get
+        {
+            return m_Indice;
+        }
+        set
+        {
+            m_Indice = value;
+        }
     }
 }

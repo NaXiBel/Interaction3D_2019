@@ -9,7 +9,7 @@ public class MenuHandler : MonoBehaviour
     public void LeapMotionClick()
     {
         Const.Controller = (int) Const.ControllerName.LeapMotion;
-        Debug.Log("cc");
+        
         SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
     public void OculusClick()

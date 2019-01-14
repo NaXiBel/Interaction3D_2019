@@ -122,6 +122,8 @@ public class OVRGrabbable : MonoBehaviour
         gameObject.GetComponent<Rigidbody>().isKinematic = true;
         grabPoint.gameObject.GetComponent<Renderer>().material = Resources.Load<Material>("Materials/ControlGrab");
         m_GrabbedPoint = grabPoint.gameObject;
+        Const.m_ControlPoints.Add(m_GrabbedPoint);
+       
     }
 
 	/// <summary>
@@ -136,7 +138,7 @@ public class OVRGrabbable : MonoBehaviour
         m_grabbedBy = null;
         m_grabbedCollider = null;
         m_GrabbedPoint.gameObject.GetComponent<Renderer>().material = Resources.Load<Material>("Materials/Control");
-
+        Const.m_ControlPoints.RemoveRange(0, Const.m_ControlPoints.Count - 1);
     }
 
     void Awake()

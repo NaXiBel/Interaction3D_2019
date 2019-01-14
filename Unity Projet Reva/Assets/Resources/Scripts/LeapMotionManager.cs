@@ -15,7 +15,7 @@ public class LeapMotionManager : MonoBehaviour {
     private float newPositionX;
     private Vector3 newPosition;
     private Vector3 newPositionR;
-    private float velocity = 0.01f;
+    private float velocity = 0.003f;
     
     private bool holdL = false;
     private bool holdR = false;
@@ -24,7 +24,8 @@ public class LeapMotionManager : MonoBehaviour {
     private bool holdRotate = false;
     private float offsetZ;
     private float offsetX;
-
+    public GameObject m_Menu = null;
+    public GameObject m_Camera = null;
     private bool m_HandLeftClosed = false;
     private bool m_HandRightClosed = false;
     private Controller m_controller;
@@ -35,6 +36,8 @@ public class LeapMotionManager : MonoBehaviour {
         offsetX = 0f;
         newPositionZ = 0f;
         newPositionX = 0f;
+        m_Camera = GameObject.FindGameObjectWithTag("Camera2");
+        m_Menu = GameObject.FindGameObjectWithTag("Menu");
     }
 
     // Update is called once per frame
@@ -44,10 +47,22 @@ public class LeapMotionManager : MonoBehaviour {
         {
             GestureHands();
             MouvementHandler();
+            MenuHandler();
         }
 
     }
-
+    void MenuHandler()
+    {
+        Vector3 HLPositionPalm = new Vector3(m_HandLeft.PalmPosition.x, m_HandLeft.PalmPosition.y, m_HandLeft.PalmPosition.z);
+        Vector3 HRPositionPalm = new Vector3(m_HandRight.PalmPosition.x, m_HandRight.PalmPosition.y, m_HandRight.PalmPosition.z);
+        
+        if (Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)) <= 30f && Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)) >= 25.0f )
+        {
+            m_Menu.GetComponent<Canvas>().enabled = true;
+            m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y - 0.5f, m_Camera.transform.position.z + 1f);
+        }
+        Debug.Log(Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)));
+    }
     void MouvementHandler()
     {
         if (m_HandLeftClosed && m_IsGrabbedControlPoint == false)
