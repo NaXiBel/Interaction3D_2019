@@ -24,58 +24,11 @@ public class TouchManager : MonoBehaviour {
         this.m_RayHandlerScript = this.GetComponent<ControllerSelection.OVRRawRaycaster>();
         this.m_RayHandlerScript.enabled = false;
         this.m_SelectionRay.SetActive(false);
-        this.m_State = SelectionStates.NONE;
+        this.m_State = SelectionStates.HAND;
         this.m_BSpline = GameObject.Find("Controller");
     }
     void Update() {
 
-        if(this.m_State == SelectionStates.NONE) {
-
-                if(OVRInput.Get(OVRInput.RawButton.A)) {
-                    Debug.Log("OK");
-                        
-                    Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
-                    if(axis2DLeftThumbstick != null) {
-                        MoveBSpline(axis2DLeftThumbstick);
-                    }
-                    
-                } else if(OVRInput.Get(OVRInput.RawButton.B)) {
-                    Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
-                    if(axis2DLeftThumbstick != null) {
-                        RotateBSpline(axis2DLeftThumbstick);
-                    }
-                }
-                /** 
-                    Utilisation de A et B pour monter ou descendre 
-                */
-                if (OVRInput.GetDown(OVRInput.RawButton.Y)) {
-                    GameObject playerObject = GameObject.Find("OVRPlayerController");
-                    playerObject.transform.Translate(0f, 0.3f, 0f);
-                }
-                if (OVRInput.GetDown(OVRInput.RawButton.X)) {
-                    GameObject playerObject = GameObject.Find("OVRPlayerController");
-                    playerObject.transform.Translate(0f, -0.3f, 0f);
-                }
-                /**
-                    Pression du joystick gauche
-                    => on fait apparaître le curseur de déplacement
-                */
-
-                if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick)) {
-                    //Debug.Log("Create");
-                    SpawnTeleportCursor();
-                }
-                /**
-                    Le joystick gauche n'est plus appuyé :
-                    => on fait disparaître le curseur
-                */
-                if (OVRInput.GetUp(OVRInput.Button.PrimaryThumbstick)) {
-                    TeleportPlayer();
-                    Destroy(m_TeleportCursor);
-                    this.m_TeleportCursor = null;
-                }
-            
-        } else {
             /**
             
                 Gestion du rayon de sélection
@@ -98,6 +51,20 @@ public class TouchManager : MonoBehaviour {
             }
 
             if(this.m_State == SelectionStates.HAND) {
+                if(OVRInput.Get(OVRInput.RawButton.A)) {
+                    Debug.Log("OK");
+                        
+                    Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
+                    if(axis2DLeftThumbstick != null) {
+                        MoveBSpline(axis2DLeftThumbstick);
+                    }
+                    
+                } else if(OVRInput.Get(OVRInput.RawButton.B)) {
+                    Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
+                    if(axis2DLeftThumbstick != null) {
+                        RotateBSpline(axis2DLeftThumbstick);
+                    }
+                }
                 /** 
                     Utilisation de A et B pour monter ou descendre 
                 */
@@ -159,7 +126,7 @@ public class TouchManager : MonoBehaviour {
                 }
             }
             
-        }
+        
 
 
 

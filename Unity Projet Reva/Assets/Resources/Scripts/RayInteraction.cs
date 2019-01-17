@@ -30,7 +30,13 @@ public class RayInteraction : MonoBehaviour {
 
     public void OnHoverEnter(Transform t) {
         Debug.Log(t.gameObject.name);
-        t.gameObject.GetComponent<Renderer>().material = this.m_HoverMaterial;
+
+        if(t.gameObject.name == "Bspline") {
+
+        } else {
+            t.gameObject.GetComponent<Renderer>().material = this.m_HoverMaterial;
+        }
+        
 
 
 
