@@ -85,7 +85,8 @@ namespace ControllerSelection {
         }
 
         void Update() {
-            activeController = OVRInputHelpers.GetControllerForButton(OVRInput.Button.PrimaryIndexTrigger, activeController);
+            activeController = OVRInput.Controller.RTouch;
+            Debug.Log(activeController);
             Ray pointer = OVRInputHelpers.GetSelectionRay(activeController, trackingSpace);
 
             RaycastHit hit; // Was anything hit?
@@ -112,10 +113,13 @@ namespace ControllerSelection {
                 // Handle selection callbacks. An object is selected if the button selecting it was
                 // pressed AND released while hovering over the object.
                 if (activeController != OVRInput.Controller.None) {
-                    if (OVRInput.GetDown(secondaryButton, activeController)) {
+                    
+                    if (OVRInput.GetDown(OVRInput.RawButton.RHandTrigger)) {
+                        
                         padDown = lastHit;
+                        onSecondarySelect.Invoke(padDown);
                     }
-                    else if (OVRInput.GetUp(secondaryButton, activeController)) {
+                    else if (OVRInput.GetUp(OVRInput.RawButton.RHandTrigger)) {
                         if (padDown != null && padDown == lastHit) {
                             if (onSecondarySelect != null) {
                                 onSecondarySelect.Invoke(padDown);
@@ -126,10 +130,13 @@ namespace ControllerSelection {
                         padDown = null;
                     }
 
-                    if (OVRInput.GetDown(primaryButton, activeController)) {
+                    if (OVRInput.GetDown(OVRInput.RawButton.LIndexTrigger)) {
                         triggerDown = lastHit;
+                        if (onPrimarySelect != null) {
+                            onPrimarySelect.Invoke(triggerDown);
+                        }
                     }
-                    else if (OVRInput.GetUp(primaryButton, activeController)) {
+                    else if (OVRInput.GetUp(OVRInput.RawButton.LIndexTrigger)) {
                         if (triggerDown != null && triggerDown == lastHit) {
                             if (onPrimarySelect != null) {
                                 onPrimarySelect.Invoke(triggerDown);
