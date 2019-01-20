@@ -9,8 +9,7 @@ public static class Const{
     public enum ControllerName {Oculus, LeapMotion};
     public static List<GameObject> m_ControlPoints = new List<GameObject>();
     public static int m_NumberControlPoints = 25; // change
-
-    
+    public static string m_FileNameControlPoint = "Assets/SaveDataBSpline/points.pts"; 
 
     public static int Controller
     {

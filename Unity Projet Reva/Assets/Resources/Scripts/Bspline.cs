@@ -47,7 +47,7 @@ public class Bspline : MonoBehaviour
 		if (points)
 		{*/
 
-        using (TextReader reader = File.OpenText("points.pts"))
+        using (TextReader reader = File.OpenText(Const.m_FileNameControlPoint))
         {
             string text = reader.ReadLine();
             string[] bits = text.Split(' ');

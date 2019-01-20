@@ -176,7 +176,7 @@ public class OVRPlayerController : MonoBehaviour
 
 	void OnEnable()
 	{
-		OVRManager.display.RecenteredPose += ResetOrientation;
+		//OVRManager.display.RecenteredPose += ResetOrientation;
 
 		if (CameraRig != null)
 		{

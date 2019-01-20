@@ -1261,12 +1261,9 @@ namespace Leap.Unity.Interaction {
         // Set rigidbody drag/angular drag to zero.
         rigidbody.drag = 0F;
         rigidbody.angularDrag = 0F;
-        Const.m_ControlPoints.Add(this.gameObject);
-        this.gameObject.GetComponent<Renderer>().material = Resources.Load<Material>("Materials/ControlGrab");
 
         OnGraspBegin();
       }
-      //LeapMotionManager.m_IsGrabbedControlPoint = true;
     }
 
     public void EndGrasp(List<InteractionController> controllers) {
@@ -1303,11 +1300,9 @@ namespace Leap.Unity.Interaction {
         }
 
         OnGraspEnd();
-        this.gameObject.GetComponent<Renderer>().material = Resources.Load<Material>("Materials/Control");
-        Const.m_ControlPoints.RemoveRange(0, Const.m_ControlPoints.Count - 1);
+
         if (_justGrasped) _justGrasped = false;
       }
-      //LeapMotionManager.m_IsGrabbedControlPoint = false ;
     }
 
     public void StayGrasped(List<InteractionController> controllers) {

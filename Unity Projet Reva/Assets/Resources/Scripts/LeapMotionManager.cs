@@ -29,7 +29,11 @@ public class LeapMotionManager : MonoBehaviour {
     private bool m_HandLeftClosed = false;
     private bool m_HandRightClosed = false;
     private Controller m_controller;
-	// Use this for initialization
+    // Use this for initialization
+    public GameObject m_RightIndex;
+
+    private bool m_RayActive = false;
+
 	void Start () {
 		m_controller = new Controller();
         offsetZ = 0f;
@@ -50,6 +54,18 @@ public class LeapMotionManager : MonoBehaviour {
             MenuHandler();
         }
 
+        if (m_RayActive)
+        {
+            LineRenderer lr = this.gameObject.GetComponent<LineRenderer>();
+
+            Vector3 start = m_RightIndex.transform.position;
+            Vector3 direction = new Vector3(m_HandRight.Fingers[1].Direction.x, m_HandRight.Fingers[1].Direction.y, -m_HandRight.Fingers[1].Direction.z);
+            lr.SetPosition(0, start);
+
+            lr.SetPosition(1, start + direction * 30f);
+
+        }
+
     }
     void MenuHandler()
     {
@@ -61,8 +77,38 @@ public class LeapMotionManager : MonoBehaviour {
             m_Menu.GetComponent<Canvas>().enabled = true;
             m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y - 0.5f, m_Camera.transform.position.z + 1f);
         }
-        Debug.Log(Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)));
+       // Debug.Log(Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)));
     }
+
+
+    public void IndexDetectorActivate()
+    {
+        Debug.Log("Detector Index");
+        this.gameObject.AddComponent<LineRenderer>();
+        LineRenderer lr = this.gameObject.GetComponent<LineRenderer>();
+        lr.useWorldSpace = false;
+        lr.startWidth = 0.02f;
+        lr.endWidth = 0.02f;
+
+        Vector3 start = m_RightIndex.transform.position;
+        Vector3 direction = - new Vector3(m_HandRight.Fingers[1].Direction.x, m_HandRight.Fingers[1].Direction.y, m_HandRight.Fingers[1].Direction.z);
+        lr.SetPosition(0, start);
+        
+        lr.SetPosition(1, start + direction * 20f);
+        m_RayActive = true;
+        Debug.Log(start);
+        Debug.Log(direction);
+        Debug.Log(start + direction * 20f);
+
+    }
+
+    public void IndexDetectorDesactivate()
+    {
+        m_RayActive = false;
+        Destroy(GetComponent<LineRenderer>());
+    }
+
+
     void MouvementHandler()
     {
         if (m_HandLeftClosed && m_IsGrabbedControlPoint == false)
@@ -71,7 +117,7 @@ public class LeapMotionManager : MonoBehaviour {
             {
                 //Mouvement
                 moveL = true;
-                Vector3 HLPositionPalm = new Vector3(m_HandLeft.PalmPosition.x, m_HandLeft.PalmPosition.y, m_HandLeft.PalmPosition.z);
+                Vector3 HLPositionPalm = new Vector3(m_HandLeft.PalmPosition.x, -m_HandLeft.PalmPosition.y, m_HandLeft.PalmPosition.z);
 
                 if (!holdL)
                 {
@@ -103,7 +149,7 @@ public class LeapMotionManager : MonoBehaviour {
             if (!moveL)
             {
                 moveR = true;
-                Vector3 HRPositionPalm = new Vector3(m_HandRight.PalmPosition.x, m_HandRight.PalmPosition.y, m_HandRight.PalmPosition.z);
+                Vector3 HRPositionPalm = new Vector3(m_HandRight.PalmPosition.x, -m_HandRight.PalmPosition.y, m_HandRight.PalmPosition.z);
 
                 if (!holdR)
                 {

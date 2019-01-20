@@ -3,14 +3,47 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.IO;
 
 public class ContextualHandler : MonoBehaviour {
     public GameObject m_ContextualMenu;
     public GameObject m_Controller;
+    public GameObject m_Bspline;
 
     public void ResetClick()
     {
         SceneManager.LoadScene(1, LoadSceneMode.Single);
+    }
+
+    public void SaveClick()
+    {
+        m_Bspline = GameObject.Find("Bspline");
+        FileStream file = File.Open("Assets/SaveDataBSpline/B_Spline_" +System.DateTime.Now.ToString("yyyy_MM_dd_hh_mm_ss") + ".pts", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+   
+        StreamWriter sr = new StreamWriter(file);
+        string write = "";
+        // x
+        for (int i = 0; i < Const.m_NumberControlPoints; ++i)
+        {
+            write += m_Bspline.GetComponent<Bspline>().xcontr[i] + " ";
+        }
+        sr.WriteLine(write);
+        write = "";
+        // y
+        for (int i = 0; i < Const.m_NumberControlPoints; ++i)
+        {
+            write += m_Bspline.GetComponent<Bspline>().ycontr[i] + " ";
+        }
+        sr.WriteLine(write);
+        write = "";
+        // z
+        for (int i = 0; i < Const.m_NumberControlPoints; ++i)
+        {
+            write += m_Bspline.GetComponent<Bspline>().zcontr[i] + " ";
+        }
+        sr.WriteLine(write);
+        write = "";
+        sr.Close();
     }
 
     public void CloseClick()
