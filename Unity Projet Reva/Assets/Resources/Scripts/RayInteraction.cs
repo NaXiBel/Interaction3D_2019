@@ -36,9 +36,7 @@ public class RayInteraction : MonoBehaviour {
         } else {
             t.gameObject.GetComponent<Renderer>().material = this.m_HoverMaterial;
         }
-        
-
-
+    
 
     }
 
@@ -52,6 +50,12 @@ public class RayInteraction : MonoBehaviour {
 
     public void OnSelected(Transform t) {
         Debug.Log("SELECTED");
+
+    }
+    
+    
+    public void OnGrabbed(Transform t) {
+        Debug.Log("GRABBED");
 
     }
 }

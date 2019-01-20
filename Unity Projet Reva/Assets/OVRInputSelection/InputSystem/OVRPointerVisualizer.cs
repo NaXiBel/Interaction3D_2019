@@ -93,7 +93,7 @@ namespace ControllerSelection {
         }
 
         void Update() {
-            activeController = OVRInputHelpers.GetControllerForButton(OVRInput.Button.PrimaryIndexTrigger, activeController);
+            activeController = OVRInput.Controller.RTouch;
             Ray selectionRay = OVRInputHelpers.GetSelectionRay(activeController, trackingSpace);
             SetPointerVisibility();
             SetPointer(selectionRay);
