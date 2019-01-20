@@ -25,14 +25,14 @@ public class TouchManager : MonoBehaviour {
         this.m_RayHandlerScript = this.GetComponent<ControllerSelection.OVRRawRaycaster>();
         this.m_RayHandlerScript.enabled = false;
         this.m_SelectionRay.SetActive(false);
-        this.m_State = SelectionStates.NONE;
+        this.m_State = SelectionStates.HAND;
         this.m_BSpline = GameObject.Find("Controller");
         m_Camera = GameObject.FindGameObjectWithTag("Camera");
         m_Menu = GameObject.FindGameObjectWithTag("Menu");
     }
     void Update() {
 
-        if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) || OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+        if (OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger))
         {
             m_Menu.GetComponent<Canvas>().enabled = true;
             m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y - 0.5f, m_Camera.transform.position.z + 1f);
@@ -106,6 +106,20 @@ public class TouchManager : MonoBehaviour {
             }
 
             if(this.m_State == SelectionStates.HAND) {
+                if(OVRInput.Get(OVRInput.RawButton.A)) {
+                    Debug.Log("OK");
+                        
+                    Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
+                    if(axis2DLeftThumbstick != null) {
+                        MoveBSpline(axis2DLeftThumbstick);
+                    }
+                    
+                } else if(OVRInput.Get(OVRInput.RawButton.B)) {
+                    Vector2 axis2DLeftThumbstick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
+                    if(axis2DLeftThumbstick != null) {
+                        RotateBSpline(axis2DLeftThumbstick);
+                    }
+                }
                 /** 
                     Utilisation de A et B pour monter ou descendre 
                 */
@@ -170,10 +184,10 @@ public class TouchManager : MonoBehaviour {
 
             }
             
+        
+
+
         }
-
-
-
 
 
 
