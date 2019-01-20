@@ -32,7 +32,7 @@ public class TouchManager : MonoBehaviour {
     }
     void Update() {
 
-        if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger) || OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+        if (OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger))
         {
             m_Menu.GetComponent<Canvas>().enabled = true;
             m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y - 0.5f, m_Camera.transform.position.z + 1f);

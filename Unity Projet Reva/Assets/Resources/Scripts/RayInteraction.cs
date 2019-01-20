@@ -49,7 +49,15 @@ public class RayInteraction : MonoBehaviour {
     }
 
     public void OnSelected(Transform t) {
-        Debug.Log("SELECTED");
+        if(t.gameObject.name == "Sphere") {
+            if(!Const.m_ControlPoints.Contains(t.gameObject)) {
+                Const.m_ControlPoints.Add(t.gameObject);
+            } else {
+                Const.m_ControlPoints.Remove(t.gameObject);
+            }
+            Debug.Log(Const.m_ControlPoints.Count);
+
+        }
 
     }
     
