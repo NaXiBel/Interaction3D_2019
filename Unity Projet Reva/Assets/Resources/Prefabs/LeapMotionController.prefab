@@ -1649,6 +1649,7 @@ GameObject:
   - component: {fileID: 4981618657777242}
   - component: {fileID: 114032106244373172}
   - component: {fileID: 114571662707985346}
+  - component: {fileID: 114502804573591770}
   m_Layer: 0
   m_Name: LeapMotionController
   m_TagString: Untagged
@@ -6447,7 +6448,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1087362419199374}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!95 &95082299907446744
 Animator:
   serializedVersion: 3
@@ -8642,6 +8643,21 @@ MonoBehaviour:
     IsRightToBeSpawned: 0
     IsEnabled: 1
     CanDuplicate: 1
+--- !u!114 &114502804573591770
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1614107749479482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20b3e9a061ed9e546a8987e2eb7bd9ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HoverMaterial: {fileID: 0}
+  m_BSplineMaterial: {fileID: 2100000, guid: 3005a3fe8e8a9a748bdc209d9da52411, type: 2}
+  m_ControlPointMaterial: {fileID: 2100000, guid: 125c43654c7542148a9f4b663bfe26e1,
+    type: 2}
 --- !u!114 &114543513751585778
 MonoBehaviour:
   m_ObjectHideFlags: 1

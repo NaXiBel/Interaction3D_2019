@@ -291,8 +291,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HoverMaterial: {fileID: 0}
-  m_BSplineMaterial: {fileID: 0}
-  m_ControlPointMaterial: {fileID: 0}
+  m_BSplineMaterial: {fileID: 2100000, guid: 3005a3fe8e8a9a748bdc209d9da52411, type: 2}
+  m_ControlPointMaterial: {fileID: 2100000, guid: 125c43654c7542148a9f4b663bfe26e1,
+    type: 2}
 --- !u!114 &114382386746000392
 MonoBehaviour:
   m_ObjectHideFlags: 1

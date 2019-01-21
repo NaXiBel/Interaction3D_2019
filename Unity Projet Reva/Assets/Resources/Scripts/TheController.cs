@@ -99,7 +99,9 @@ public class TheController : MonoBehaviour {
             if (Const.Controller == (int)Const.ControllerName.LeapMotion)
             {
                 go.AddComponent<Leap.Unity.Interaction.InteractionBehaviour>();
+                go.tag = "pointable";
             }
+            maSpline.tag = "pointable";
             go.transform.parent = this.transform;
 
             tab[i] = go;
