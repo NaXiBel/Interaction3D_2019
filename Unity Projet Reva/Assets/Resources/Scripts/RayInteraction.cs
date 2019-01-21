@@ -31,6 +31,12 @@ public class RayInteraction : MonoBehaviour {
     public Material m_BSplineMaterial = null;
     public Material m_ControlPointMaterial = null;
 
+    public void Update()
+    {
+        GameObject B_Spline = GameObject.Find("Bspline");
+        m_BSplineMaterial = B_Spline.GetComponent<Renderer>().material;
+    }
+
     public static GameObject GrabbedPoint {
         get {
             return RayInteraction.m_GrabbedPoint;
@@ -56,7 +62,8 @@ public class RayInteraction : MonoBehaviour {
 
         if(t.gameObject.name == "Bspline") {
 
-        } else {
+        } else if (t.gameObject.name == "Sphere")
+        {
             t.gameObject.GetComponent<Renderer>().material = this.m_HoverMaterial;
         }
     

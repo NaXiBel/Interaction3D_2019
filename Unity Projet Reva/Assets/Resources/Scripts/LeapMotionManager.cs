@@ -34,9 +34,15 @@ public class LeapMotionManager : MonoBehaviour {
     private Controller m_controller;
     // Use this for initialization
     public GameObject m_RightIndex;
+    public GameObject hitObject = null;
+    public Vector3 hitObjectLastPos = Vector3.zero;
+
 
     private bool m_RayActive = false;
     private GameObject m_HoverredObject;
+    private Vector3 m_Start;
+    private Vector3 m_Direction;
+    public Material m_Mat;
 	void Start () {
 		m_controller = new Controller();
         offsetZ = 0f;
@@ -66,8 +72,14 @@ public class LeapMotionManager : MonoBehaviour {
             lr.SetPosition(0, start);
             
             lr.SetPosition(1, start + direction * 100f);
-
+            m_Start = start;
+            m_Direction = direction;
             RaycastHit hit;
+            if (hitObject != null)
+            {
+                hitObject.transform.position = m_Start + m_Direction * Vector3.Distance(hitObjectLastPos, m_Start);
+            }
+
             if (Physics.Raycast(start, direction, out hit, 100))
             {
                 
@@ -91,6 +103,8 @@ public class LeapMotionManager : MonoBehaviour {
                     }
 
                 }
+                hitObject = null;
+                hitObjectLastPos = Vector3.zero;
 
             }
             Debug.DrawRay(start, direction * 100, Color.red);
@@ -119,13 +133,17 @@ public class LeapMotionManager : MonoBehaviour {
         lr.useWorldSpace = true;
         lr.startWidth = 0.02f;
         lr.endWidth = 0.02f;
-
+        
         Vector3 start = m_RightIndex.transform.position;
         Vector3 direction = - new Vector3(m_HandRight.Fingers[1].Direction.x, m_HandRight.Fingers[1].Direction.y, m_HandRight.Fingers[1].Direction.z);
         lr.SetPosition(0, start);
         
         lr.SetPosition(1, start + direction * 100f);
+        lr.material = m_Mat;
+
+
         m_RayActive = true;
+     
     }
 
     public void IndexDetectorDesactivate()
@@ -142,7 +160,8 @@ public class LeapMotionManager : MonoBehaviour {
             }
             Debug.Log("Trigger on exit");
         }
-
+        hitObject = null;
+        hitObjectLastPos = Vector3.zero;
     }
 
 
@@ -153,6 +172,10 @@ public class LeapMotionManager : MonoBehaviour {
             if (m_HoverredObject != null)
             {
                 this.GetComponent<RayInteraction>().OnSelected(m_HoverredObject.transform);
+                hitObject = m_HoverredObject.transform.gameObject;
+                hitObjectLastPos = m_HoverredObject.transform.position;
+                hitObject.transform.position = m_Start + m_Direction * Vector3.Distance(hitObjectLastPos, m_Start);
+
                 Debug.Log("On selected trigger");
             }
             if (!moveR)

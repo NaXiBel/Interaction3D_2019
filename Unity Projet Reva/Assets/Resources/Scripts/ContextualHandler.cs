@@ -9,7 +9,7 @@ public class ContextualHandler : MonoBehaviour {
     public GameObject m_ContextualMenu;
     public GameObject m_Controller;
     public GameObject m_Bspline;
-
+    private bool m_IsWireframe = true;
     public void ResetClick()
     {
         SceneManager.LoadScene(1, LoadSceneMode.Single);
@@ -119,6 +119,21 @@ public class ContextualHandler : MonoBehaviour {
             --Const.m_NumberControlPoints;
             Debug.Log("Remove : " + Const.m_NumberControlPoints);
             Destroy(point);
+        }
+    }
+
+    public void WireFrame()
+    {
+
+        m_Bspline = GameObject.Find("Bspline");
+        if (m_IsWireframe)
+        {
+            m_Bspline.GetComponent<Renderer>().material = Resources.Load("Materials/Wireframe", typeof(Material)) as Material;
+            m_IsWireframe = false;
+        } else
+        {
+            m_Bspline.GetComponent<Renderer>().material = Resources.Load("Materials/B_Spline", typeof(Material)) as Material;
+            m_IsWireframe = true;
         }
     }
 }
