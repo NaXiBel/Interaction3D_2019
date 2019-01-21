@@ -19,6 +19,7 @@ limitations under the License.
 
 ************************************************************************************/
 
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -62,6 +63,9 @@ namespace ControllerSelection {
         [HideInInspector]
         public OVRInput.Controller activeController = OVRInput.Controller.None;
 
+        public GameObject hitObject = null;
+        public Vector3 hitObjectLastPos = Vector3.zero;
+
         void Awake() {
             if (trackingSpace == null) {
                 Debug.LogWarning("OVRRawRaycaster did not have a tracking space set. Looking for one");
@@ -86,7 +90,6 @@ namespace ControllerSelection {
 
         void Update() {
             activeController = OVRInput.Controller.RTouch;
-            Debug.Log(activeController);
             Ray pointer = OVRInputHelpers.GetSelectionRay(activeController, trackingSpace);
 
             RaycastHit hit; // Was anything hit?
@@ -110,6 +113,11 @@ namespace ControllerSelection {
 
                 lastHit = hit.transform;
 
+                    
+                if(hitObject != null) {
+                    hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
+                }
+
                 // Handle selection callbacks. An object is selected if the button selecting it was
                 // pressed AND released while hovering over the object.
                 if (activeController != OVRInput.Controller.None) {
@@ -117,9 +125,14 @@ namespace ControllerSelection {
                     if (OVRInput.GetDown(OVRInput.RawButton.RHandTrigger)) {
                         
                         padDown = lastHit;
-                        onSecondarySelect.Invoke(padDown);
+                        //onSecondarySelect.Invoke(padDown);
+                        hitObject = hit.transform.gameObject;
+                        hitObjectLastPos = lastHit.position;
+                        hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
                     }
-                    else if (OVRInput.GetUp(OVRInput.RawButton.RHandTrigger)) {
+                    if (OVRInput.GetUp(OVRInput.RawButton.RHandTrigger)) {
+                        hitObject = null;
+                        hitObjectLastPos = Vector3.zero;
                         if (padDown != null && padDown == lastHit) {
                             if (onSecondarySelect != null) {
                                 onSecondarySelect.Invoke(padDown);

@@ -24,9 +24,32 @@ using UnityEngine.SceneManagement;
 
 public class RayInteraction : MonoBehaviour {
 
+    private static GameObject m_GrabbedPoint = null;
+
+    private static GameObject m_HitPoint = null;
     public Material m_HoverMaterial = null;
     public Material m_BSplineMaterial = null;
     public Material m_ControlPointMaterial = null;
+
+    public static GameObject GrabbedPoint {
+        get {
+            return RayInteraction.m_GrabbedPoint;
+        }
+
+        set {
+            RayInteraction.m_GrabbedPoint = value;
+        }
+    }
+
+    public static GameObject HitPoint {
+        get {
+            return RayInteraction.m_HitPoint;
+        }
+
+        set {
+            RayInteraction.m_HitPoint = value;
+        }
+    }
 
     public void OnHoverEnter(Transform t) {
         Debug.Log(t.gameObject.name);
@@ -61,9 +84,17 @@ public class RayInteraction : MonoBehaviour {
 
     }
     
-    
+         
     public void OnGrabbed(Transform t) {
-        Debug.Log("GRABBED");
+        if(t.gameObject.name == "Sphere") {
+            RayInteraction.m_GrabbedPoint = t.gameObject;
+            GameObject ray = GameObject.Find("SelectionVisualizer");
+            Debug.Log(ray);
+
+            RayInteraction.m_HitPoint = Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
+            RayInteraction.m_HitPoint.transform.parent = ray.transform;
+            RayInteraction.m_HitPoint.transform.localPosition = t.position;
+        }
 
     }
 }
