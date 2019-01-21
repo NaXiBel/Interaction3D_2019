@@ -22,4 +22,19 @@ public class MenuHandler : MonoBehaviour
         SceneManager.LoadScene(1, LoadSceneMode.Single);
 
     }
+    /*
+     * User host his server, hasToken is set because he is the first user.
+     * ip and port is needed
+     **/
+    public void HostServer() {
+
+    }
+
+    /*
+     * User join other server, hasToken need to be set to false, he is an observer
+     * ip and port is needed
+     * */
+    public void JoinServer() {
+
+    }
 }

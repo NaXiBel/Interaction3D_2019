@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,6 +12,9 @@ public class TheController : MonoBehaviour {
     public GameObject[] tab;
     public GameObject go;
     public GameObject Bspline;
+    public bool hasToken;
+    public bool modified;
+    public TCPConnection myTCP;
 
     private GameObject maSpline;
 
@@ -23,10 +28,17 @@ public class TheController : MonoBehaviour {
     */
     private GameObject[] lines;
 
+    private void Awake() {
+        //add a copy of TCPConnection to this game object
+        myTCP = TCPController.myTCP;
+    }
+
 
     // Use this for initialization
     void Start () {
          GameObject controller;
+        //add a copy of TCPConnection to this game object
+        //myTCP = TCPController.myTCP;
         switch (Const.Controller)
         {
             case (int)Const.ControllerName.Oculus:
@@ -78,6 +90,9 @@ public class TheController : MonoBehaviour {
 
         transform.position = new Vector3(0.0f, 0.0f, 0.0f);
         // tranTampon = translation.transform.position;
+        hasToken = true;
+        modified = true;
+        InvokeRepeating("SocketResponse", 0f, 0.01f);  //1s delay, repeat every 1s
 
     }
 
@@ -151,32 +166,92 @@ public class TheController : MonoBehaviour {
         UpdateLines();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        /*rot = rotation.transform.position;
-        tran = translation.transform.position;
-
-        transform.position = new Vector3(tran.x - 2.0f, tran.y + 0.0f, tran.z + 0.0f);
-        transform.rotation = rotation.transform.rotation;//Quaternion.FromToRotation( new Vector3(-2.0f, +2.0f,0.0f), new Vector3(rot.x -tranTampon.x, rot.y - tranTampon.y, rot.z - tranTampon.z));
-        */
-        //tranTampon = translation.transform.position;
-
-        //mise a jour des points de controles
-        for(int i = 0; i < Const.m_NumberControlPoints; i++)
-        {
-
-            maSpline.GetComponent<Bspline>().xcontr[i] = tab[i].transform.position.x;
-            maSpline.GetComponent<Bspline>().ycontr[i] = tab[i].transform.position.y;
-            maSpline.GetComponent<Bspline>().zcontr[i] = tab[i].transform.position.z;
+    IEnumerator YieldingWork() {
+        bool workDone = false;
+        while (!workDone) {
+            SocketResponse();
+            yield return null;
         }
-        maSpline.GetComponent<MeshCollider>().sharedMesh = maSpline.GetComponent<MeshFilter>().mesh;
-        //mise a jour de la surface
-        maSpline.GetComponent<Bspline>().Calc();
-        //maSpline.GetComponent<MeshFilter>().mesh.RecalculateNormals();
-        //mise a jour des lignes entre les pooints
-
-        UpdateLines();
+    }
+    //socket reading script
+    void SocketResponse() {
+        Debug.Log(hasToken);
+        if (hasToken) {
+            //send 
+            string strX = String.Join(",", maSpline.GetComponent<Bspline>().xcontr.Select(p => p.ToString()).ToArray());
+            string strY = String.Join(",", maSpline.GetComponent<Bspline>().ycontr.Select(p => p.ToString()).ToArray());
+            string strZ = String.Join(",", maSpline.GetComponent<Bspline>().zcontr.Select(p => p.ToString()).ToArray());
+            string update = "3;1;25;" + strX + ";" + strY + ";" + strZ ;
+            Debug.Log(update);
+            if (modified) {
+                myTCP.writeSocket(update);
+                modified = false;
+            }
+            
+        }
+        //retreive 
+        string serverSays = myTCP.readSocket();
+        if (serverSays != "") {
+            UpdateFromServer(serverSays);
+        }
+        
     }
 
+    // {5; nbUser; nbPointsDeControles; tabUserX; tabUserY; tabUserZ; tabPtX; tabPtY; tabPtZ}
+    void UpdateFromServer(string serverSays) {
+        if(serverSays != "") {
+            Debug.Log(serverSays);
+            String[] data;
+            data = serverSays.Split(';');
+            if (Int32.Parse(data[0]) == 5) {
+                int nbUser = Int32.Parse(data[1]);
+                int nbPt = Int32.Parse(data[2]);
+                for (int i = 0 ;i<nbUser ; ++i) {
+                    //Bouger l'utilisateur sauf si c'est lui
+                    Debug.Log("update other user position");
+                }
+                if (!hasToken) { // !hasToken No need to send and retreive same data
+                    string[] tabX = data[3].Split(',');
+                    string[] tabY = data[4].Split(',');
+                    string[] tabZ = data[5].Split(',');
+                    for (int i = 0 ; i < nbPt ; ++i) {
+                        maSpline.GetComponent<Bspline>().xcontr[i] = float.Parse(tabX[i], CultureInfo.InvariantCulture.NumberFormat);
+                        maSpline.GetComponent<Bspline>().ycontr[i] = float.Parse(tabY[i], CultureInfo.InvariantCulture.NumberFormat);
+                        maSpline.GetComponent<Bspline>().zcontr[i] = float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat);
+                    }
+                }
+            }
+        }
+    }
+
+        
+        // Update is called once per frame
+        void FixedUpdate()
+   {
+
+        for (int i = 0 ; i < Const.m_NumberControlPoints ; i++) {
+            if(modified || maSpline.GetComponent<Bspline>().xcontr[i] != tab[i].transform.position.x) {
+                maSpline.GetComponent<Bspline>().xcontr[i] = tab[i].transform.position.x;
+                modified = true;
+            }
+            if (modified || maSpline.GetComponent<Bspline>().ycontr[i] != tab[i].transform.position.y) {
+                maSpline.GetComponent<Bspline>().ycontr[i] = tab[i].transform.position.y;
+                modified = true;
+            }
+            if (modified || maSpline.GetComponent<Bspline>().zcontr[i] != tab[i].transform.position.z) {
+                maSpline.GetComponent<Bspline>().zcontr[i] = tab[i].transform.position.z;
+                modified = true;
+            }
+        }
+        if (modified) {
+            maSpline.GetComponent<MeshCollider>().sharedMesh = maSpline.GetComponent<MeshFilter>().mesh;
+            //mise a jour de la surface
+            maSpline.GetComponent<Bspline>().Calc();
+            //maSpline.GetComponent<MeshFilter>().mesh.RecalculateNormals();
+            //mise a jour des lignes entre les pooints
+            UpdateLines();
+        }
+        
+    }
+    
 }
