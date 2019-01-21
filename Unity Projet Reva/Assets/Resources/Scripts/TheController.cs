@@ -37,6 +37,7 @@ public class TheController : MonoBehaviour {
                 break;
             case (int)Const.ControllerName.LeapMotion:
                 controller = (GameObject)Instantiate(Resources.Load("Prefabs/LeapMotionController"));
+
                 break;
         }
 
@@ -48,15 +49,19 @@ public class TheController : MonoBehaviour {
         maSpline.GetComponent<Rigidbody>().useGravity = false;
         maSpline.GetComponent<Rigidbody>().isKinematic = true;
         maSpline.AddComponent<MeshCollider>();
+
         maSpline.GetComponent<Renderer>().material = Resources.Load("Materials/B_Spline", typeof(Material)) as Material;
         maSpline.layer = 10;
         maSpline.AddComponent<Bspline>();
         maSpline.GetComponent<Bspline>().Start();
+       
         //maSpline.AddComponent(Type.GetType("Resources/NoSharedVertices"));
         //initialisation des points de controle
         tab = new GameObject[Const.m_NumberControlPoints];
         InitiateTab();
-
+        maSpline.GetComponent<MeshCollider>().convex = true;
+        maSpline.GetComponent<MeshCollider>().inflateMesh = true;
+        maSpline.tag = "pointableSpine";
         //initialisation des lignes entre les points
         lines = new GameObject[(int)Math.Sqrt(Const.m_NumberControlPoints) * 4*2];
         Gradient gradient = new Gradient();
@@ -79,6 +84,21 @@ public class TheController : MonoBehaviour {
         transform.position = new Vector3(0.0f, 0.0f, 0.0f);
         // tranTampon = translation.transform.position;
 
+
+        if (Const.Controller == (int)Const.ControllerName.LeapMotion)
+        {
+            GameObject bsplineControle = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            bsplineControle.transform.parent = this.transform;
+            bsplineControle.name = "ControleB-Spline";
+            //changement de la taille des points de controle
+            bsplineControle.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+            bsplineControle.AddComponent<Rigidbody>();
+            bsplineControle.GetComponent<Rigidbody>().useGravity = false;
+            bsplineControle.GetComponent<Rigidbody>().isKinematic = true;
+            bsplineControle.GetComponent<Renderer>().material = Resources.Load("Materials/Control", typeof(Material)) as Material;
+            bsplineControle.tag = "pointableSpine";
+
+        }
     }
 
     //initialise les points de controle
@@ -101,7 +121,7 @@ public class TheController : MonoBehaviour {
                 go.AddComponent<Leap.Unity.Interaction.InteractionBehaviour>();
                 go.tag = "pointable";
             }
-            maSpline.tag = "pointable";
+            maSpline.tag = "pointableSpine";
             go.transform.parent = this.transform;
 
             tab[i] = go;

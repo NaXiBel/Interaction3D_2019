@@ -123,7 +123,13 @@ public class OVRGrabbable : MonoBehaviour
         grabPoint.gameObject.GetComponent<Renderer>().material = Resources.Load<Material>("Materials/ControlGrab");
         m_GrabbedPoint = grabPoint.gameObject;
         Const.m_ControlPoints.Add(m_GrabbedPoint);
-       
+        GameObject positionCanvas = GameObject.Find("MenuPosition");
+
+        positionCanvas.transform.position = new Vector3(GameObject.Find("OVRCameraRig").transform.position.x, GameObject.Find("OVRCameraRig").transform.position.y , GameObject.Find("OVRCameraRig").transform.position.z);
+
+        positionCanvas.GetComponent<Canvas>().enabled = true;
+        positionCanvas.GetComponent<PositionMenuHandler>().Initialize();
+
     }
 
 	/// <summary>

@@ -1263,6 +1263,15 @@ namespace Leap.Unity.Interaction {
         rigidbody.angularDrag = 0F;
 
         OnGraspBegin();
+
+        Debug.Log("OnBegin");
+        Const.m_ControlPoints.Add(this.gameObject);
+        GameObject positionCanvas = GameObject.Find("MenuPosition");
+
+        positionCanvas.transform.position = new Vector3(GameObject.Find("Camera").transform.position.x, GameObject.Find("Camera").transform.position.y + 0.2f, GameObject.Find("Camera").transform.position.z + 0.3f);
+
+        positionCanvas.GetComponent<Canvas>().enabled = true;
+        positionCanvas.GetComponent<PositionMenuHandler>().Initialize();
       }
     }
 
@@ -1271,6 +1280,7 @@ namespace Leap.Unity.Interaction {
         // No grasped hands: Should not be suspended any more;
         // having been suspended also means we were only grasped by one hand
         EndSuspension(controllers[0]);
+
       }
 
       foreach (var controller in controllers) {
@@ -1300,7 +1310,10 @@ namespace Leap.Unity.Interaction {
         }
 
         OnGraspEnd();
-
+        //Debug.Log("OnEnd");
+        //Const.m_ControlPoints.Remove(this.gameObject);
+        //GameObject positionCanvas = GameObject.Find("MenuPosition");
+        //positionCanvas.GetComponent<Canvas>().enabled = false;
         if (_justGrasped) _justGrasped = false;
       }
     }

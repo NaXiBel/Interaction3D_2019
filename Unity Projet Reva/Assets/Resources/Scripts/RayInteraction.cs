@@ -82,12 +82,26 @@ public class RayInteraction : MonoBehaviour {
         if(t.gameObject.name == "Sphere") {
             if(!Const.m_ControlPoints.Contains(t.gameObject)) {
                 Const.m_ControlPoints.Add(t.gameObject);
-            } else {
+                GameObject positionCanvas = GameObject.Find("MenuPosition");
+                if (Const.Controller == (int)Const.ControllerName.Oculus)
+                {
+                    positionCanvas.transform.position = new Vector3(GameObject.Find("OVRCameraRig").transform.position.x, GameObject.Find("OVRCameraRig").transform.position.y, GameObject.Find("OVRCameraRig").transform.position.z + 1f);
+                } else
+                {
+                    positionCanvas.transform.position = new Vector3(GameObject.Find("Camera").transform.position.x, GameObject.Find("Camera").transform.position.y + 0.4f, GameObject.Find("Camera").transform.position.z + 0.3f);
+                }
+                positionCanvas.GetComponent<Canvas>().enabled = true;
+                positionCanvas.GetComponent<PositionMenuHandler>().Initialize();
+
+            }
+            else {
                 Const.m_ControlPoints.Remove(t.gameObject);
             }
             Debug.Log(Const.m_ControlPoints.Count);
 
         }
+
+
 
     }
     

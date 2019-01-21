@@ -7,19 +7,14 @@ using UnityEngine.SceneManagement;
 public class MenuHandler : MonoBehaviour
 {
     public Dropdown m_Files;
-    
-    public void LeapMotionClick()
+    public Dropdown m_Controller;
+
+    public void OnPlayClick()
     {
 
-        Const.Controller = (int) Const.ControllerName.LeapMotion;
+        Const.Controller = m_Controller.value;
         Const.m_FileNameControlPoint = "Assets/SaveDataBSpline/" + m_Files.options[m_Files.value].text;
         SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
-    public void OculusClick()
-    {
-        Const.Controller = (int)Const.ControllerName.Oculus;
-        Const.m_FileNameControlPoint = "Assets/SaveDataBSpline/" + m_Files.options[m_Files.value].text;
-        SceneManager.LoadScene(1, LoadSceneMode.Single);
-
-    }
+  
 }
