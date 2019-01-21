@@ -96,6 +96,8 @@ namespace ControllerSelection {
             if (Physics.Raycast(pointer, out hit, raycastDistance, ~excludeLayers)) {
                 if (lastHit != null && lastHit != hit.transform) {
                     if (onHoverExit != null) {
+                        hitObject = null;
+                        hitObjectLastPos = Vector3.zero;
                         onHoverExit.Invoke(lastHit);
                     }
                     lastHit = null;
@@ -125,7 +127,6 @@ namespace ControllerSelection {
                     if (OVRInput.GetDown(OVRInput.RawButton.RHandTrigger)) {
                         
                         padDown = lastHit;
-                        //onSecondarySelect.Invoke(padDown);
                         hitObject = hit.transform.gameObject;
                         hitObjectLastPos = lastHit.position;
                         hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
@@ -182,6 +183,8 @@ namespace ControllerSelection {
             // Nothing was hit, handle exit callback
             else if (lastHit != null) {
                 if (onHoverExit != null) {
+                    hitObject = null;
+                    hitObjectLastPos = Vector3.zero;
                     onHoverExit.Invoke(lastHit);
                 }
                 lastHit = null;
