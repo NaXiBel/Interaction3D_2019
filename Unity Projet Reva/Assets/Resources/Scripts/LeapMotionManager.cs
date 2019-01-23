@@ -196,7 +196,7 @@ public class LeapMotionManager : MonoBehaviour {
             {
                 //Mouvement
                 moveL = true;
-                Vector3 HLPositionPalm = new Vector3(-m_HandLeft.PalmPosition.x, -m_HandLeft.PalmPosition.y, m_HandLeft.PalmPosition.z);
+                Vector3 HLPositionPalm = new Vector3(m_HandLeft.PalmPosition.x, m_HandLeft.PalmPosition.y, -m_HandLeft.PalmPosition.z);
 
                 if (!holdL)
                 {
@@ -239,7 +239,7 @@ public class LeapMotionManager : MonoBehaviour {
             if (!moveL)
             {
                 moveR = true;
-                Vector3 HRPositionPalm = new Vector3(-m_HandRight.PalmPosition.x, -m_HandRight.PalmPosition.y, m_HandRight.PalmPosition.z);
+                Vector3 HRPositionPalm = new Vector3(m_HandRight.PalmPosition.x, m_HandRight.PalmPosition.y, -m_HandRight.PalmPosition.z);
 
                 if (!holdR)
                 {
