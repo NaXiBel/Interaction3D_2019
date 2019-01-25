@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ public class PositionMenuHandler : MonoBehaviour {
     public Text m_X;
     public Text m_Y;
     public Text m_Z;
+    public Text m_Step;
     public float m_Sensibility = 0.1f;
 
     public void Initialize()
@@ -21,6 +23,31 @@ public class PositionMenuHandler : MonoBehaviour {
     {
         this.GetComponent<Canvas>().enabled = false;
     }
+
+
+    public void DecreaseStep()
+    {
+        float convert;
+        float.TryParse(m_Step.text, out convert);
+        if (m_Sensibility > 0.00001f)
+        {
+            m_Sensibility = convert / 10f;
+            m_Step.text = m_Sensibility.ToString();
+        }
+    }
+
+    public void IncreaseStep()
+    {
+        float convert;
+        float.TryParse(m_Step.text, out convert);
+        if (m_Sensibility < 100000)
+        {
+            m_Sensibility = convert * 10f;
+            m_Step.text = m_Sensibility.ToString();
+        }
+
+    }
+
 
     public void DecreaseX()
     {

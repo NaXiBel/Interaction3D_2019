@@ -34,6 +34,7 @@ public class LeapMotionManager : MonoBehaviour {
     private Controller m_controller;
     // Use this for initialization
     public GameObject m_RightIndex;
+    public GameObject m_LeftHand;
     public GameObject hitObject = null;
     public Vector3 hitObjectLastPos = Vector3.zero;
 
@@ -78,7 +79,10 @@ public class LeapMotionManager : MonoBehaviour {
             if (hitObject != null)
             {
                 hitObject.transform.position = m_Start + m_Direction * Vector3.Distance(hitObjectLastPos, m_Start);
-
+                if (m_HoverredObject.tag == "pointableSpine")
+                {
+                    hitObject.transform.Rotate(m_LeftHand.transform.eulerAngles * Time.deltaTime * 0.01f);
+                }
             }
 
             if (Physics.Raycast(start, direction, out hit, 100))

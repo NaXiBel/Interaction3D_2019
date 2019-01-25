@@ -31,6 +31,11 @@ public class RayInteraction : MonoBehaviour {
     public Material m_BSplineMaterial = null;
     public Material m_ControlPointMaterial = null;
 
+    public void Start()
+    {
+        m_HoverMaterial = (Material)Resources.Load("Materials/ControlHover", typeof(Material));
+    }
+
     public void Update()
     {
         GameObject B_Spline = GameObject.Find("Bspline");
