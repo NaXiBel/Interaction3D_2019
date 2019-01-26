@@ -101,6 +101,7 @@ void Server::listenUser(unsigned int _id)
 			// Set/update BSpline.
 			if(atoi(v[1].c_str()) == tokenId) {
 				int size = atoi(v[2].c_str());
+				spline.tailleTab = size;
 				vector<string> stabX(size);
 				parseTab(v[3], stabX);
 				vector<string> stabY(size);
@@ -125,7 +126,7 @@ void Server::listenUser(unsigned int _id)
 			tabUserY[_id-1] = atof(v[2].c_str());
 			tabUserZ[_id-1] = atof(v[3].c_str());
 			sendAll(getSummary());
-			cout << "L'utilisateur " << _id << " se trouve désormais en " << tabUserX[_id] << "," << tabUserY[_id] << "," << tabUserZ[_id] <<"." << endl;
+			cout << "L'utilisateur " << _id << " se trouve désormais en " << tabUserX[_id-1] << "," << tabUserY[_id-1] << "," << tabUserZ[_id-1] <<"." << endl;
 		} else if (v[0] == "5") {
 			// Demande d'infos.
 			sendUser(_id, getSummary());
