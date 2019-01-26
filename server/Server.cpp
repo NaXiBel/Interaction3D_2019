@@ -102,11 +102,11 @@ void Server::listenUser(unsigned int _id)
 			if(atoi(v[1].c_str()) == tokenId) {
 				int size = atoi(v[2].c_str());
 				vector<string> stabX(size);
-				// parse
+				parseTab(v[3], stabX);
 				vector<string> stabY(size);
-				// parse
+				parseTab(v[4], stabY);
 				vector<string> stabZ(size);
-				// parse
+				parseTab(v[5], stabZ);
 				spline.tabX = vector<float>(size);
 				spline.tabY = vector<float>(size);
 				spline.tabZ = vector<float>(size);
@@ -121,9 +121,9 @@ void Server::listenUser(unsigned int _id)
 			}
 		} else if (v[0] == "4") {
 			// Set/update position utilisateur.
-			tabUserX[_id] = atof(v[1].c_str());
-			tabUserY[_id] = atof(v[2].c_str());
-			tabUserZ[_id] = atof(v[3].c_str());
+			tabUserX[_id-1] = atof(v[1].c_str());
+			tabUserY[_id-1] = atof(v[2].c_str());
+			tabUserZ[_id-1] = atof(v[3].c_str());
 			sendAll(getSummary());
 			cout << "L'utilisateur " << _id << " se trouve désormais en " << tabUserX[_id] << "," << tabUserY[_id] << "," << tabUserZ[_id] <<"." << endl;
 		} else if (v[0] == "5") {
@@ -143,7 +143,6 @@ void Server::disconnectUser(unsigned int _id)
 	close(userSocket);
 	cout << "Clients connectés: " << sessions.size() << endl;
 	releaseToken(_id);
-	cout << "Debug3" << endl;
 	stringstream buffer;
 	buffer << "Client " << _id << " déconnecté." << endl;
 	cout << buffer.str();
@@ -243,6 +242,33 @@ void Server::parseArgs(string _s, vector<string> &_v)
 			}
 			break;
 		} else if((c == ';')) {
+			if(!acc.empty()) {
+				_v.push_back(acc);
+				acc.clear();
+			}
+		} else {
+			acc = acc + c;
+		}
+		i++;
+	}
+	if(!acc.empty()) {
+		_v.push_back(acc);
+	}
+}
+
+void Server::parseTab(string _s, vector<string> &_v)
+{
+	int i = 0;
+	string acc = "";
+	char c;
+	while((i < _s.length()) && (i < BUFLEN)) {
+		c = _s[i];
+		if((c == '\n') || (c == '\0')) {
+			if(!acc.empty()) {
+				_v.push_back(acc);
+			}
+			break;
+		} else if((c == ',')) {
 			if(!acc.empty()) {
 				_v.push_back(acc);
 				acc.clear();

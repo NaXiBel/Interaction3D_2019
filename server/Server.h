@@ -56,4 +56,6 @@ class Server {
 		static void sendUser(unsigned int _id, std::string buffer);
 		static void releaseToken(unsigned int _id);
 		static std::string getSummary(void);
-		static void parseArgs(std::string _s, std::vector<std::string> &_v);};
+		static void parseArgs(std::string _s, std::vector<std::string> &_v);
+		static void parseTab(std::string _s, std::vector<std::string> &_v);
+};
