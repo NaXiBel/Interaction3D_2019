@@ -85,8 +85,7 @@ public class TheController : MonoBehaviour {
         // tranTampon = translation.transform.position;
 
 
-        if (Const.Controller == (int)Const.ControllerName.LeapMotion)
-        {
+        //if (Const.Controller == (int)Const.ControllerName.LeapMotion){
             GameObject bsplineControle = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             bsplineControle.transform.parent = this.transform;
             bsplineControle.name = "ControleB-Spline";
@@ -98,7 +97,7 @@ public class TheController : MonoBehaviour {
             bsplineControle.GetComponent<Renderer>().material = Resources.Load("Materials/Control", typeof(Material)) as Material;
             bsplineControle.tag = "pointableSpine";
 
-        }
+       // }
     }
 
     //initialise les points de controle

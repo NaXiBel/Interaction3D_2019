@@ -125,20 +125,27 @@ namespace ControllerSelection {
                 if (activeController != OVRInput.Controller.None) {
                     
                     if (OVRInput.GetDown(OVRInput.RawButton.RHandTrigger)) {
-                        
                         padDown = lastHit;
-                        hitObject = hit.transform.gameObject;
-                        hitObjectLastPos = lastHit.position;
-                        hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
+
+                        if(hit.transform.gameObject.name == "Sphere") {
+                            hitObject = hit.transform.gameObject;
+                            hitObjectLastPos = lastHit.position;
+                            hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
+                        } else if(hit.transform.gameObject.name == "ControleB-Spline") {
+                            hitObject = GameObject.Find("Controller");
+                            hitObjectLastPos = GameObject.Find("Controller").transform.position;
+                            hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
+                        }
+                        
+
                     }
                     if (OVRInput.GetUp(OVRInput.RawButton.RHandTrigger)) {
-                        hitObject = null;
-                        hitObjectLastPos = Vector3.zero;
-                        if (padDown != null && padDown == lastHit) {
-                            if (onSecondarySelect != null) {
-                                onSecondarySelect.Invoke(padDown);
-                            }
+                        
+                        if(hit.transform.gameObject.name == "Sphere" || hit.transform.gameObject.name == "ControleB-Spline") {
+                            hitObject = null;
+                            hitObjectLastPos = Vector3.zero;
                         }
+
                     }
                     if (!OVRInput.Get(secondaryButton, activeController)) {
                         padDown = null;

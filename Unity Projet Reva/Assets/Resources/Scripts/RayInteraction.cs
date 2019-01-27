@@ -30,10 +30,12 @@ public class RayInteraction : MonoBehaviour {
     public Material m_HoverMaterial = null;
     public Material m_BSplineMaterial = null;
     public Material m_ControlPointMaterial = null;
+    public Material m_SelectedMaterial = null;
 
     public void Start()
     {
         m_HoverMaterial = (Material)Resources.Load("Materials/ControlHover", typeof(Material));
+        m_SelectedMaterial = (Material)Resources.Load("Materials/ControlSelected", typeof(Material));
     }
 
     public void Update()
@@ -64,22 +66,24 @@ public class RayInteraction : MonoBehaviour {
 
     public void OnHoverEnter(Transform t) {
         Debug.Log(t.gameObject.name);
+        
+        if (t.gameObject.name == "Sphere" || t.gameObject.name == "ControleB-Spline") {
 
-        if(t.gameObject.name == "Bspline") {
-
-        } else if (t.gameObject.name == "Sphere")
-        {
-            t.gameObject.GetComponent<Renderer>().material = this.m_HoverMaterial;
+            if(!Const.m_ControlPoints.Contains(t.gameObject)) {
+                t.gameObject.GetComponent<Renderer>().material = this.m_HoverMaterial;
+            }
         }
     
 
     }
 
     public void OnHoverExit(Transform t) {
-        if(t.gameObject.name == "Bspline") {
-            t.gameObject.GetComponent<Renderer>().material = this.m_BSplineMaterial;
-        } else if(t.gameObject.name == "Sphere") {
-            t.gameObject.GetComponent<Renderer>().material = this.m_ControlPointMaterial;
+        if(t.gameObject.name == "Sphere" || t.gameObject.name == "ControleB-Spline") {
+
+            if(!Const.m_ControlPoints.Contains(t.gameObject)) {
+                t.gameObject.GetComponent<Renderer>().material = this.m_ControlPointMaterial;
+            }
+
         }
     }
 
@@ -87,6 +91,7 @@ public class RayInteraction : MonoBehaviour {
         if(t.gameObject.name == "Sphere") {
             if(!Const.m_ControlPoints.Contains(t.gameObject)) {
                 Const.m_ControlPoints.Add(t.gameObject);
+                t.gameObject.GetComponent<Renderer>().material = this.m_SelectedMaterial;
                 GameObject positionCanvas = GameObject.Find("MenuPosition");
                 if (Const.Controller == (int)Const.ControllerName.Oculus)
                 {
@@ -101,6 +106,7 @@ public class RayInteraction : MonoBehaviour {
             }
             else {
                 Const.m_ControlPoints.Remove(t.gameObject);
+                t.gameObject.GetComponent<Renderer>().material = this.m_ControlPointMaterial;
             }
             Debug.Log(Const.m_ControlPoints.Count);
 
@@ -115,7 +121,6 @@ public class RayInteraction : MonoBehaviour {
         if(t.gameObject.name == "Sphere") {
             RayInteraction.m_GrabbedPoint = t.gameObject;
             GameObject ray = GameObject.Find("SelectionVisualizer");
-            Debug.Log(ray);
 
             RayInteraction.m_HitPoint = Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
             RayInteraction.m_HitPoint.transform.parent = ray.transform;
