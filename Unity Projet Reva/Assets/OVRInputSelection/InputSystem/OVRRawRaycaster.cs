@@ -19,6 +19,7 @@ limitations under the License.
 
 ************************************************************************************/
 
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -62,6 +63,9 @@ namespace ControllerSelection {
         [HideInInspector]
         public OVRInput.Controller activeController = OVRInput.Controller.None;
 
+        public GameObject hitObject = null;
+        public Vector3 hitObjectLastPos = Vector3.zero;
+
         void Awake() {
             if (trackingSpace == null) {
                 Debug.LogWarning("OVRRawRaycaster did not have a tracking space set. Looking for one");
@@ -86,13 +90,14 @@ namespace ControllerSelection {
 
         void Update() {
             activeController = OVRInput.Controller.RTouch;
-            Debug.Log(activeController);
             Ray pointer = OVRInputHelpers.GetSelectionRay(activeController, trackingSpace);
 
             RaycastHit hit; // Was anything hit?
             if (Physics.Raycast(pointer, out hit, raycastDistance, ~excludeLayers)) {
                 if (lastHit != null && lastHit != hit.transform) {
                     if (onHoverExit != null) {
+                        hitObject = null;
+                        hitObjectLastPos = Vector3.zero;
                         onHoverExit.Invoke(lastHit);
                     }
                     lastHit = null;
@@ -110,21 +115,37 @@ namespace ControllerSelection {
 
                 lastHit = hit.transform;
 
+                    
+                if(hitObject != null) {
+                    hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
+                }
+
                 // Handle selection callbacks. An object is selected if the button selecting it was
                 // pressed AND released while hovering over the object.
                 if (activeController != OVRInput.Controller.None) {
                     
                     if (OVRInput.GetDown(OVRInput.RawButton.RHandTrigger)) {
-                        
                         padDown = lastHit;
-                        onSecondarySelect.Invoke(padDown);
-                    }
-                    else if (OVRInput.GetUp(OVRInput.RawButton.RHandTrigger)) {
-                        if (padDown != null && padDown == lastHit) {
-                            if (onSecondarySelect != null) {
-                                onSecondarySelect.Invoke(padDown);
-                            }
+
+                        if(hit.transform.gameObject.name == "Sphere") {
+                            hitObject = hit.transform.gameObject;
+                            hitObjectLastPos = lastHit.position;
+                            hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
+                        } else if(hit.transform.gameObject.name == "ControleB-Spline") {
+                            hitObject = GameObject.Find("Controller");
+                            hitObjectLastPos = GameObject.Find("Controller").transform.position;
+                            hitObject.transform.position = pointer.origin + pointer.direction * Vector3.Distance(hitObjectLastPos, pointer.origin);
                         }
+                        
+
+                    }
+                    if (OVRInput.GetUp(OVRInput.RawButton.RHandTrigger)) {
+                        
+                        if(hit.transform.gameObject.name == "Sphere" || hit.transform.gameObject.name == "ControleB-Spline") {
+                            hitObject = null;
+                            hitObjectLastPos = Vector3.zero;
+                        }
+
                     }
                     if (!OVRInput.Get(secondaryButton, activeController)) {
                         padDown = null;
@@ -169,6 +190,8 @@ namespace ControllerSelection {
             // Nothing was hit, handle exit callback
             else if (lastHit != null) {
                 if (onHoverExit != null) {
+                    hitObject = null;
+                    hitObjectLastPos = Vector3.zero;
                     onHoverExit.Invoke(lastHit);
                 }
                 lastHit = null;

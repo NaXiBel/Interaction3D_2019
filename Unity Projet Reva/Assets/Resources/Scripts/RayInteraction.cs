@@ -24,27 +24,66 @@ using UnityEngine.SceneManagement;
 
 public class RayInteraction : MonoBehaviour {
 
+    private static GameObject m_GrabbedPoint = null;
+
+    private static GameObject m_HitPoint = null;
     public Material m_HoverMaterial = null;
     public Material m_BSplineMaterial = null;
     public Material m_ControlPointMaterial = null;
+    public Material m_SelectedMaterial = null;
+
+    public void Start()
+    {
+        m_HoverMaterial = (Material)Resources.Load("Materials/ControlHover", typeof(Material));
+        m_SelectedMaterial = (Material)Resources.Load("Materials/ControlSelected", typeof(Material));
+    }
+
+    public void Update()
+    {
+        GameObject B_Spline = GameObject.Find("Bspline");
+        m_BSplineMaterial = B_Spline.GetComponent<Renderer>().material;
+    }
+
+    public static GameObject GrabbedPoint {
+        get {
+            return RayInteraction.m_GrabbedPoint;
+        }
+
+        set {
+            RayInteraction.m_GrabbedPoint = value;
+        }
+    }
+
+    public static GameObject HitPoint {
+        get {
+            return RayInteraction.m_HitPoint;
+        }
+
+        set {
+            RayInteraction.m_HitPoint = value;
+        }
+    }
 
     public void OnHoverEnter(Transform t) {
         Debug.Log(t.gameObject.name);
+        
+        if (t.gameObject.name == "Sphere" || t.gameObject.name == "ControleB-Spline") {
 
-        if(t.gameObject.name == "Bspline") {
-
-        } else {
-            t.gameObject.GetComponent<Renderer>().material = this.m_HoverMaterial;
+            if(!Const.m_ControlPoints.Contains(t.gameObject)) {
+                t.gameObject.GetComponent<Renderer>().material = this.m_HoverMaterial;
+            }
         }
     
 
     }
 
     public void OnHoverExit(Transform t) {
-        if(t.gameObject.name == "Bspline") {
-            t.gameObject.GetComponent<Renderer>().material = this.m_BSplineMaterial;
-        } else if(t.gameObject.name == "Sphere") {
-            t.gameObject.GetComponent<Renderer>().material = this.m_ControlPointMaterial;
+        if(t.gameObject.name == "Sphere" || t.gameObject.name == "ControleB-Spline") {
+
+            if(!Const.m_ControlPoints.Contains(t.gameObject)) {
+                t.gameObject.GetComponent<Renderer>().material = this.m_ControlPointMaterial;
+            }
+
         }
     }
 
@@ -52,18 +91,41 @@ public class RayInteraction : MonoBehaviour {
         if(t.gameObject.name == "Sphere") {
             if(!Const.m_ControlPoints.Contains(t.gameObject)) {
                 Const.m_ControlPoints.Add(t.gameObject);
-            } else {
+                t.gameObject.GetComponent<Renderer>().material = this.m_SelectedMaterial;
+                GameObject positionCanvas = GameObject.Find("MenuPosition");
+                if (Const.Controller == (int)Const.ControllerName.Oculus)
+                {
+                    positionCanvas.transform.position = new Vector3(GameObject.Find("OVRCameraRig").transform.position.x, GameObject.Find("OVRCameraRig").transform.position.y, GameObject.Find("OVRCameraRig").transform.position.z + 1f);
+                } else
+                {
+                    positionCanvas.transform.position = new Vector3(GameObject.Find("Camera").transform.position.x, GameObject.Find("Camera").transform.position.y + 0.4f, GameObject.Find("Camera").transform.position.z + 0.3f);
+                }
+                positionCanvas.GetComponent<Canvas>().enabled = true;
+                positionCanvas.GetComponent<PositionMenuHandler>().Initialize();
+
+            }
+            else {
                 Const.m_ControlPoints.Remove(t.gameObject);
+                t.gameObject.GetComponent<Renderer>().material = this.m_ControlPointMaterial;
             }
             Debug.Log(Const.m_ControlPoints.Count);
 
         }
 
+
+
     }
     
-    
+         
     public void OnGrabbed(Transform t) {
-        Debug.Log("GRABBED");
+        if(t.gameObject.name == "Sphere") {
+            RayInteraction.m_GrabbedPoint = t.gameObject;
+            GameObject ray = GameObject.Find("SelectionVisualizer");
+
+            RayInteraction.m_HitPoint = Instantiate(new GameObject(), Vector3.zero, Quaternion.identity);
+            RayInteraction.m_HitPoint.transform.parent = ray.transform;
+            RayInteraction.m_HitPoint.transform.localPosition = t.position;
+        }
 
     }
 }

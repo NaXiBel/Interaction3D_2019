@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Leap;
+using Leap.Unity.Interaction;
+using System;
+
 public class LeapMotionManager : MonoBehaviour {
 
     public static bool m_IsGrabbedControlPoint = false;
@@ -31,9 +34,16 @@ public class LeapMotionManager : MonoBehaviour {
     private Controller m_controller;
     // Use this for initialization
     public GameObject m_RightIndex;
+    public GameObject m_LeftHand;
+    public GameObject hitObject = null;
+    public Vector3 hitObjectLastPos = Vector3.zero;
+
 
     private bool m_RayActive = false;
-
+    private GameObject m_HoverredObject;
+    private Vector3 m_Start;
+    private Vector3 m_Direction;
+    public Material m_Mat;
 	void Start () {
 		m_controller = new Controller();
         offsetZ = 0f;
@@ -61,9 +71,49 @@ public class LeapMotionManager : MonoBehaviour {
             Vector3 start = m_RightIndex.transform.position;
             Vector3 direction = new Vector3(m_HandRight.Fingers[1].Direction.x, m_HandRight.Fingers[1].Direction.y, -m_HandRight.Fingers[1].Direction.z);
             lr.SetPosition(0, start);
+            
+            lr.SetPosition(1, start + direction * 100f);
+            m_Start = start;
+            m_Direction = direction;
+            RaycastHit hit;
+            if (hitObject != null)
+            {
+                hitObject.transform.position = m_Start + m_Direction * Vector3.Distance(hitObjectLastPos, m_Start);
+                if (m_HoverredObject.tag == "pointableSpine")
+                {
+                    hitObject.transform.Rotate(m_LeftHand.transform.eulerAngles * Time.deltaTime * 0.01f);
+                }
+            }
 
-            lr.SetPosition(1, start + direction * 30f);
+            if (Physics.Raycast(start, direction, out hit, 100))
+            {
+                   // hit.collider.gameObject.GetComponent<InteractionBehaviour>().isHovered = true;
+                if (hit.collider.gameObject.tag == "pointable" || hit.collider.gameObject.tag == "pointableSpine")
+                {
+               //     Debug.Log("HIT" + hit.transform.position + "  " + hit.collider.gameObject.GetType());
+                    this.GetComponent<RayInteraction>().OnHoverEnter(hit.collider.transform);
+                    m_HoverredObject = hit.collider.gameObject;
+                    if (hit.collider.gameObject.tag == "pointableSpline")
+                        Debug.Log("Trigger B_Spline");
+                }
 
+
+            } else
+            {
+                if (m_HoverredObject != null)
+                {
+                    if (m_HoverredObject.tag == "pointable" || m_HoverredObject.tag == "pointableSpine")
+                    {
+                        this.GetComponent<RayInteraction>().OnHoverExit(m_HoverredObject.transform);
+                        m_HoverredObject = null;
+                    }
+
+                }
+                hitObject = null;
+                hitObjectLastPos = Vector3.zero;
+
+            }
+            Debug.DrawRay(start, direction * 100, Color.red);
         }
 
     }
@@ -72,10 +122,10 @@ public class LeapMotionManager : MonoBehaviour {
         Vector3 HLPositionPalm = new Vector3(m_HandLeft.PalmPosition.x, m_HandLeft.PalmPosition.y, m_HandLeft.PalmPosition.z);
         Vector3 HRPositionPalm = new Vector3(m_HandRight.PalmPosition.x, m_HandRight.PalmPosition.y, m_HandRight.PalmPosition.z);
         
-        if (Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)) <= 30f && Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)) >= 25.0f )
+        if (Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)) <= 15f && Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)) >= 10.0f )
         {
             m_Menu.GetComponent<Canvas>().enabled = true;
-            m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y - 0.5f, m_Camera.transform.position.z + 1f);
+            m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y, m_Camera.transform.position.z + 0.3f);
         }
        // Debug.Log(Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)));
     }
@@ -83,29 +133,41 @@ public class LeapMotionManager : MonoBehaviour {
 
     public void IndexDetectorActivate()
     {
-        Debug.Log("Detector Index");
+      //  Debug.Log("Detector Index");
         this.gameObject.AddComponent<LineRenderer>();
         LineRenderer lr = this.gameObject.GetComponent<LineRenderer>();
-        lr.useWorldSpace = false;
+        lr.useWorldSpace = true;
         lr.startWidth = 0.02f;
         lr.endWidth = 0.02f;
-
+        
         Vector3 start = m_RightIndex.transform.position;
         Vector3 direction = - new Vector3(m_HandRight.Fingers[1].Direction.x, m_HandRight.Fingers[1].Direction.y, m_HandRight.Fingers[1].Direction.z);
         lr.SetPosition(0, start);
         
-        lr.SetPosition(1, start + direction * 20f);
-        m_RayActive = true;
-        Debug.Log(start);
-        Debug.Log(direction);
-        Debug.Log(start + direction * 20f);
+        lr.SetPosition(1, start + direction * 100f);
+        lr.material = m_Mat;
 
+
+        m_RayActive = true;
+     
     }
 
     public void IndexDetectorDesactivate()
     {
         m_RayActive = false;
         Destroy(GetComponent<LineRenderer>());
+
+        if (m_HoverredObject != null)
+        {
+            if (m_HoverredObject.tag == "pointable")
+            {
+                this.GetComponent<RayInteraction>().OnHoverExit(m_HoverredObject.transform);
+                m_HoverredObject = null;
+            }
+            Debug.Log("Trigger on exit");
+        }
+        hitObject = null;
+        hitObjectLastPos = Vector3.zero;
     }
 
 
@@ -113,11 +175,32 @@ public class LeapMotionManager : MonoBehaviour {
     {
         if (m_HandLeftClosed && m_IsGrabbedControlPoint == false)
         {
+            if (m_HoverredObject != null)
+            {
+                this.GetComponent<RayInteraction>().OnSelected(m_HoverredObject.transform);
+                if (m_HoverredObject.tag == "pointableSpine")
+                {
+                    hitObject = GameObject.Find("Controller");
+                    hitObjectLastPos = GameObject.Find("Controller").transform.position;
+                    hitObject.transform.position = m_Start + m_Direction * Vector3.Distance(hitObjectLastPos, m_Start);
+
+                }
+                else
+                {
+                    hitObject = m_HoverredObject.transform.gameObject;
+                    hitObjectLastPos = m_HoverredObject.transform.position;
+                    hitObject.transform.position = m_Start + m_Direction * Vector3.Distance(hitObjectLastPos, m_Start);
+
+                }
+
+
+                Debug.Log("On selected trigger");
+            }
             if (!moveR)
             {
                 //Mouvement
                 moveL = true;
-                Vector3 HLPositionPalm = new Vector3(m_HandLeft.PalmPosition.x, -m_HandLeft.PalmPosition.y, m_HandLeft.PalmPosition.z);
+                Vector3 HLPositionPalm = new Vector3(m_HandLeft.PalmPosition.x, m_HandLeft.PalmPosition.y, -m_HandLeft.PalmPosition.z);
 
                 if (!holdL)
                 {
@@ -143,13 +226,24 @@ public class LeapMotionManager : MonoBehaviour {
         {
             holdL = false;
             moveL = false;
+            if (m_HoverredObject != null)
+            {
+                if (m_HoverredObject.tag == "pointable" || m_HoverredObject.tag == "pointableSpine")
+                {
+                    this.GetComponent<RayInteraction>().OnHoverExit(m_HoverredObject.transform);
+                    m_HoverredObject = null;
+                }
+
+            }
+            hitObject = null;
+            hitObjectLastPos = Vector3.zero;
         }
         if (m_HandRightClosed && m_IsGrabbedControlPoint == false)
         {
             if (!moveL)
             {
                 moveR = true;
-                Vector3 HRPositionPalm = new Vector3(m_HandRight.PalmPosition.x, -m_HandRight.PalmPosition.y, m_HandRight.PalmPosition.z);
+                Vector3 HRPositionPalm = new Vector3(m_HandRight.PalmPosition.x, m_HandRight.PalmPosition.y, -m_HandRight.PalmPosition.z);
 
                 if (!holdR)
                 {
@@ -193,7 +287,7 @@ public class LeapMotionManager : MonoBehaviour {
                     if (m_HandLeft.GrabStrength >= 1-m_epsilon && m_HandLeft.GrabStrength <= 1 + m_epsilon)
                     {
                         m_HandLeftClosed = true;
-                        Debug.Log("HandLeft Closed");
+                        //Debug.Log("HandLeft Closed");
                     } else
                     {
                         m_HandLeftClosed = false;
@@ -205,7 +299,7 @@ public class LeapMotionManager : MonoBehaviour {
                     if (m_HandRight.GrabStrength >= 1 - m_epsilon && m_HandRight.GrabStrength <= 1 + m_epsilon)
                     {
                         m_HandRightClosed = true;
-                        Debug.Log("HandRight Closed");
+                      //  Debug.Log("HandRight Closed");
                     } else
                     {
                         m_HandRightClosed = false;

@@ -11,6 +11,8 @@ TagManager:
   - Menu
   - Camera
   - Camera2
+  - pointable
+  - pointableSpine
   layers:
   - Default
   - TransparentFX

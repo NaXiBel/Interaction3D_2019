@@ -163,7 +163,7 @@ public class Bspline : MonoBehaviour
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
-
+        
         //ecriture du maillage de la surface dans Bspline.obj
         //Save();
     }

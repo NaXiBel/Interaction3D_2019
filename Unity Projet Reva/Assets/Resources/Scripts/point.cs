@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Leap.Unity.Interaction;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,6 +30,7 @@ public class Point : MonoBehaviour
     {   
         Vector3 displayedPosition = this.transform.position;
         this.m_TextCoord.GetComponent<TextMesh>().text = "(" + displayedPosition.x + ", " + displayedPosition.y + ", " + displayedPosition.z + ")";
+
     }
 
     public static void OnHoverEnter(Transform ray) {
