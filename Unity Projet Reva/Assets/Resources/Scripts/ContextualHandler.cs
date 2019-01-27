@@ -12,6 +12,7 @@ public class ContextualHandler : MonoBehaviour {
     private bool m_IsWireframe = true;
     public void ResetClick()
     {
+        Const.m_ControlPoints.Clear();
         SceneManager.LoadScene(1, LoadSceneMode.Single);
     }
 

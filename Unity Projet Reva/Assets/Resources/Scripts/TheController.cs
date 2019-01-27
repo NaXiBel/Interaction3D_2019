@@ -59,8 +59,8 @@ public class TheController : MonoBehaviour {
         //initialisation des points de controle
         tab = new GameObject[Const.m_NumberControlPoints];
         InitiateTab();
-        maSpline.GetComponent<MeshCollider>().convex = true;
-        maSpline.GetComponent<MeshCollider>().inflateMesh = true;
+       // maSpline.GetComponent<MeshCollider>().convex = true;
+       // maSpline.GetComponent<MeshCollider>().inflateMesh = true;
         maSpline.tag = "pointableSpine";
         //initialisation des lignes entre les points
         lines = new GameObject[(int)Math.Sqrt(Const.m_NumberControlPoints) * 4*2];
