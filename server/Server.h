@@ -1,14 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <map>
-#include <sstream>
-#include <thread>
-#include <vector>
-#define BUFLEN 4096
 #ifdef _WIN32
-	#include <winsock2.h>
 	#include "stdafx.h"
+	#include <winsock2.h>
 	#pragma comment(lib, "ws2_32.lib")
 	typedef int socklen_t;
 #else
@@ -24,6 +16,15 @@
     #define SOCKET_ERROR -1
     #define closesocket(s) close(s)
 #endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <map>
+#include <sstream>
+#include <thread>
+#include <vector>
+#define BUFLEN 4096
+
 
 typedef struct s_BSpline {
 	int tailleTab;
@@ -38,7 +39,7 @@ class Server {
 		static unsigned int nbUser;
 		static unsigned int tokenId;
 		socklen_t m_csinsize;
-		#ifdef __WIN32__
+		#ifdef _WIN32
 			WSADATA WSAData;
 		#endif
 		SOCKET serverSocket;
