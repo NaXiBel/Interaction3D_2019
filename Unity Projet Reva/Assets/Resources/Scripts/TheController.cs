@@ -15,6 +15,11 @@ public class TheController : MonoBehaviour {
     public bool hasToken;
     public bool modified;
     public TCPConnection myTCP;
+    public GameObject player;
+    private List<GameObject> users;
+    private float playerLastX;
+    private float playerLastY;
+    private float playerLastZ;
 
     private GameObject maSpline;
 
@@ -95,8 +100,14 @@ public class TheController : MonoBehaviour {
 
         transform.position = new Vector3(0.0f, 0.0f, 0.0f);
         // tranTampon = translation.transform.position;
-        hasToken = true;
+        users = new List<GameObject>();
+        player = GameObject.Find("OVRPlayerController");
+        Debug.Log("in Start : ");
+        Debug.Log(TCPController.hasToken);
         modified = true;
+        playerLastX = 0.0f;
+        playerLastY = 0.0f;
+        playerLastZ = 0.0f;
         InvokeRepeating("SocketResponse", 0f, 0.01f);  //1s delay, repeat every 1s
 
 
@@ -196,19 +207,34 @@ public class TheController : MonoBehaviour {
     }
     //socket reading script
     void SocketResponse() {
-        Debug.Log(hasToken);
-        if (hasToken) {
+        Debug.Log(TCPController.hasToken);
+        if (TCPController.hasToken) {
             //send 
             string strX = String.Join(",", maSpline.GetComponent<Bspline>().xcontr.Select(p => p.ToString()).ToArray());
             string strY = String.Join(",", maSpline.GetComponent<Bspline>().ycontr.Select(p => p.ToString()).ToArray());
             string strZ = String.Join(",", maSpline.GetComponent<Bspline>().zcontr.Select(p => p.ToString()).ToArray());
-            string update = "3;1;25;" + strX + ";" + strY + ";" + strZ ;
-            Debug.Log(update);
+            string update = "3;"+TCPController.userId+";25;" + strX + ";" + strY + ";" + strZ ;
             if (modified) {
+                Debug.Log(update);
                 myTCP.writeSocket(update);
                 modified = false;
             }
             
+        }
+        //Sending user position
+        float x, y, z;
+        x = player.transform.position.x;
+        y = player.transform.position.y;
+        z = player.transform.position.z;
+        if (x != playerLastX || y != playerLastY || z != playerLastZ)
+        {
+            playerLastX = x;
+            playerLastY = y;
+            playerLastZ = z;
+            string updatePlayerPos = "4" + ";" + x + ";" + y + ";" + z ;
+            Debug.Log("Sending player position : " + updatePlayerPos);
+            myTCP.writeSocket(updatePlayerPos);
+
         }
         //retreive 
         string serverSays = myTCP.readSocket();
@@ -219,35 +245,66 @@ public class TheController : MonoBehaviour {
     }
 
     // {5; nbUser; nbPointsDeControles; tabUserX; tabUserY; tabUserZ; tabPtX; tabPtY; tabPtZ}
-    void UpdateFromServer(string serverSays) {
-        if(serverSays != "") {
+    void UpdateFromServer(string serverSays)
+    {
+        if (serverSays != "")
+        {
             Debug.Log(serverSays);
             String[] data;
             data = serverSays.Split(';');
-            if (Int32.Parse(data[0]) == 5) {
+            if (data[0] == "0")
+            {
+                //First update : 0;id;posx;posy;posz
+                TCPController.UserId = Int32.Parse(data[1]);
+                Debug.Log("Id has been obtained");
+            }
+            if (Int32.Parse(data[0]) == 5)
+            {
                 int nbUser = Int32.Parse(data[1]);
                 int nbPt = Int32.Parse(data[2]);
-                for (int i = 0 ;i<nbUser ; ++i) {
+                string[] tabUserX = data[3].Split(',');
+                string[] tabUserY = data[4].Split(',');
+                string[] tabUserZ = data[5].Split(',');
+                for (int i = 0; i < nbUser; ++i)
+                {
                     //Bouger l'utilisateur sauf si c'est lui
                     Debug.Log("update other user position");
+                    if (nbUser > users.Count)
+                    {
+                        for (int j = users.Count; j < nbUser; ++j)
+                        {
+                            users.Add((GameObject)Instantiate(Resources.Load("Prefabs/User")));
+                        }
+                    }
+                    if (i != TCPController.userId - 1)
+                    {
+                        users[i].transform.position = new Vector3(float.Parse(tabUserX[i], CultureInfo.InvariantCulture.NumberFormat),
+                            float.Parse(tabUserY[i], CultureInfo.InvariantCulture.NumberFormat),
+                            float.Parse(tabUserZ[i], CultureInfo.InvariantCulture.NumberFormat));
+                    }
                 }
-                if (!hasToken) { // !hasToken No need to send and retreive same data
-                    string[] tabX = data[3].Split(',');
-                    string[] tabY = data[4].Split(',');
-                    string[] tabZ = data[5].Split(',');
-                    for (int i = 0 ; i < nbPt ; ++i) {
+                if (!hasToken)
+                { // !hasToken No need to retreive sended BSpline coordonate
+                    string[] tabX = data[6].Split(',');
+                    string[] tabY = data[7].Split(',');
+                    string[] tabZ = data[8].Split(',');
+                    for (int i = 0; i < nbPt; ++i)
+                    {
                         maSpline.GetComponent<Bspline>().xcontr[i] = float.Parse(tabX[i], CultureInfo.InvariantCulture.NumberFormat);
                         maSpline.GetComponent<Bspline>().ycontr[i] = float.Parse(tabY[i], CultureInfo.InvariantCulture.NumberFormat);
                         maSpline.GetComponent<Bspline>().zcontr[i] = float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat);
                     }
                 }
+                Debug.Log("ID :" + data[9] + " has the token");
+                if (!hasToken && Int32.Parse(data[9]) == TCPController.UserId) TCPController.hasToken = true;
+                else TCPController.hasToken = false;
             }
         }
     }
 
-        
-        // Update is called once per frame
-        void FixedUpdate()
+
+    // Update is called once per frame
+    void FixedUpdate()
    {
 
         for (int i = 0 ; i < Const.m_NumberControlPoints ; i++) {

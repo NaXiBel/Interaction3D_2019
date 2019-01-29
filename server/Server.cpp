@@ -141,7 +141,7 @@ void Server::disconnectUser(unsigned int _id)
 {
 	SOCKET userSocket = sessions[_id];
 	sessions.erase(_id);
-	close(userSocket);
+	closesocket(userSocket);
 	cout << "Clients connectés: " << sessions.size() << endl;
 	releaseToken(_id);
 	stringstream buffer;

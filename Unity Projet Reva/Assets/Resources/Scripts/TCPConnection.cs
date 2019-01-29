@@ -12,7 +12,7 @@ public class TCPConnection : MonoBehaviour {
     public string conHost = "127.0.0.1";
 
     //port for the server, make sure to unblock this in your router firewall if you want to allow external connections
-    public int conPort = 9999;
+    public int conPort = 25128;
     public bool canRead = true;
     //a true/false variable for connection status
     public bool socketReady = false;
