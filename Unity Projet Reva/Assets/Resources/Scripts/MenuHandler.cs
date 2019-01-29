@@ -8,11 +8,11 @@ public class MenuHandler : MonoBehaviour
 {
     public Dropdown m_Files;
     public Dropdown m_Controller;
-    private Text m_ServerNameText;
+    private InputField m_ServerNameText;
 
     private void Start()
     {
-        m_ServerNameText = GameObject.Find("ServerNameText").GetComponent<Text>();
+        m_ServerNameText = GameObject.Find("ServerInput").GetComponent<InputField>();
     }
 
     public void OnPlayClick()
