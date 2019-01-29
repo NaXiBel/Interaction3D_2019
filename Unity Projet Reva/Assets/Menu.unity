@@ -1977,7 +1977,7 @@ GameObject:
   - component: {fileID: 974036023}
   - component: {fileID: 974036022}
   m_Layer: 5
-  m_Name: InputField
+  m_Name: ServerInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

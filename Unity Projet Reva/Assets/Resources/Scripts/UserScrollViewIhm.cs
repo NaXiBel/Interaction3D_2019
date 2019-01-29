@@ -51,9 +51,9 @@ public class UserScrollViewIhm : MonoBehaviour {
     public static void UpdateUserList()
     {
         /*Cleaning*/
-        //var children = new List<GameObject>();
-        //foreach (Transform child in UserScrollViewIhm.m_ScrollVIew.transform) children.Add(child.gameObject);
-        //children.ForEach(child => Destroy(child));
+        var children = new List<GameObject>();
+        foreach (Transform child in UserScrollViewIhm.m_ScrollViewSt.transform) children.Add(child.gameObject);
+        children.ForEach(child => Destroy(child));
 
         int cpt = 0;
         foreach (int id in TheController.usersList.Keys)

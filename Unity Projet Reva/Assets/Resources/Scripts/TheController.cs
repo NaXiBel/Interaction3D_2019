@@ -356,6 +356,9 @@ public class TheController : MonoBehaviour {
                         maSpline.GetComponent<Bspline>().zcontr[i] = float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat);
                         tab[i].transform.position = new Vector3(float.Parse(tabX[i], CultureInfo.InvariantCulture.NumberFormat), float.Parse(tabY[i], CultureInfo.InvariantCulture.NumberFormat), float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat));
                         Debug.Log("Vec3 : " + float.Parse(tabX[i], CultureInfo.InvariantCulture.NumberFormat)+","+ float.Parse(tabY[i], CultureInfo.InvariantCulture.NumberFormat) + "," + float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat));
+                        SetActiveGrabScript(false);
+
+
                     }
                     maSpline.GetComponent<MeshCollider>().sharedMesh = maSpline.GetComponent<MeshFilter>().mesh;
                     //mise a jour de la surface
@@ -377,6 +380,7 @@ public class TheController : MonoBehaviour {
                 {
                     TCPController.hasToken = true;
                     TCPController.userHasToken = TCPController.UserId;
+                    SetActiveGrabScript(true);
                 }
                 else if (Int32.Parse(cleanID[0]) == TCPController.UserId)
                 {
@@ -387,6 +391,7 @@ public class TheController : MonoBehaviour {
                 {
                     TCPController.hasToken = false;
                     TCPController.userHasToken = Int32.Parse(cleanID[0]);
+                    SetActiveGrabScript(false);
                 }
             }
         }
@@ -426,6 +431,15 @@ public class TheController : MonoBehaviour {
                 //mise a jour des lignes entre les pooints
                 UpdateLines();
             }
+        }
+
+    }
+    private void SetActiveGrabScript (bool b)
+    {
+        for (int i = 0; i < tab.Length; ++i)
+        {
+            if (Const.Controller == (int)Const.ControllerName.Oculus) tab[i].GetComponent<OVRGrabbable>().enabled = b;
+            else tab[i].GetComponent<Leap.Unity.Interaction.InteractionBehaviour>().enabled = b;
         }
     }
     
