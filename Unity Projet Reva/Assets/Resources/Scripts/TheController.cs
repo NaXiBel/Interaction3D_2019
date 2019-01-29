@@ -321,10 +321,18 @@ public class TheController : MonoBehaviour {
                 if (!TCPController.hasToken && Int32.Parse(cleanID[0]) == TCPController.UserId)
                 {
                     TCPController.hasToken = true;
-                }else if (Int32.Parse(cleanID[0]) == TCPController.UserId){
-                    TCPController.hasToken = true;
+                    TCPController.userHasToken = TCPController.UserId;
                 }
-                else TCPController.hasToken = false;
+                else if (Int32.Parse(cleanID[0]) == TCPController.UserId)
+                {
+                    TCPController.hasToken = true;
+                    TCPController.userHasToken = TCPController.UserId;
+                }
+                else
+                {
+                    TCPController.hasToken = false;
+                    TCPController.userHasToken = Int32.Parse(cleanID[0]);
+                }
             }
         }
     }
