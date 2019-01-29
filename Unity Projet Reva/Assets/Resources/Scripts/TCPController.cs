@@ -108,7 +108,8 @@ public class TCPController : MonoBehaviour {
 
     private void OnDestroy()
     {
-        //DEBUG process.Kill();
+        myTCP.closeSocket();
+        process.Kill();
     }
 
     public static IEnumerator StartServer()
@@ -153,6 +154,15 @@ public class TCPController : MonoBehaviour {
         {
             Debug.Log("Return Token");
             string update = "2;" + userId;
+            myTCP.writeSocket(update);
+        }
+    }
+    public static void AskSummary()
+    {
+        if (userId > -1)
+        {
+            Debug.Log("Ask Summary");
+            string update = "5;" + userId;
             myTCP.writeSocket(update);
         }
     }

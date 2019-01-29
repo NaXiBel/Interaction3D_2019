@@ -108,7 +108,8 @@ public class TheController : MonoBehaviour {
         player = GameObject.Find("OVRPlayerController");
         Debug.Log("in Start : ");
         Debug.Log(TCPController.hasToken);
-        modified = true;
+        if (!TCPController.hasToken) modified = false;
+        else modified = true;
         playerLastX = 0.0f;
         playerLastY = 0.0f;
         playerLastZ = 0.0f;
@@ -265,7 +266,7 @@ public class TheController : MonoBehaviour {
                     Debug.Log("Id has been obtained");
                     TCPController.isIdObtained = true;
                     usersList.Add(TCPController.UserId, null);
-
+                    TCPController.AskSummary();
                 }
                 //data[2],data[3],data[4] are positions
                 //data[5] = id1,id2,id3,id4
@@ -274,7 +275,9 @@ public class TheController : MonoBehaviour {
                 for(int j = 0; j < ids.Length; ++j)
                 {
                     Debug.Log("ids[j] : " + ids[j]);
-                    int parsedId = Int32.Parse(ids[j]);
+                    string replacement = Regex.Replace(ids[j], @"\t|\n|\r", " ");
+                    string[] cleanID = replacement.Split(' ');
+                    int parsedId = Int32.Parse(cleanID[0]);
                     if (TCPController.UserId != parsedId)
                     {
                         //Si c'est pas le meme
@@ -321,14 +324,14 @@ public class TheController : MonoBehaviour {
                 string[] tabUserY = data[4].Split(',');
                 string[] tabUserZ = data[5].Split(',');
                 
-                for (int i = 0; i < nbUser && nbUser>1; ++i)
+                for (int i = 0; i < usersList.Count && nbUser>1; ++i)
                 {
                     
                     Debug.Log("update other user position");
                     IList<GameObject> ilistValues = usersList.Values;
                     if (i != usersList.IndexOfKey(TCPController.UserId))
                     {
-                        Debug.Log("Updating id : " + i);
+                        Debug.Log("Updating id from key: " + i);
                         ilistValues[i].transform.position = new Vector3(float.Parse(tabUserX[i], CultureInfo.InvariantCulture.NumberFormat),
                               float.Parse(tabUserY[i], CultureInfo.InvariantCulture.NumberFormat),
                               float.Parse(tabUserZ[i], CultureInfo.InvariantCulture.NumberFormat));
@@ -342,6 +345,7 @@ public class TheController : MonoBehaviour {
                 }
                 if (!TCPController.hasToken)
                 { // !hasToken No need to retreive sended BSpline coordonate
+                    Debug.Log("Updating points");
                     string[] tabX = data[6].Split(',');
                     string[] tabY = data[7].Split(',');
                     string[] tabZ = data[8].Split(',');
@@ -350,7 +354,15 @@ public class TheController : MonoBehaviour {
                         maSpline.GetComponent<Bspline>().xcontr[i] = float.Parse(tabX[i], CultureInfo.InvariantCulture.NumberFormat);
                         maSpline.GetComponent<Bspline>().ycontr[i] = float.Parse(tabY[i], CultureInfo.InvariantCulture.NumberFormat);
                         maSpline.GetComponent<Bspline>().zcontr[i] = float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat);
+                        tab[i].transform.position = new Vector3(float.Parse(tabX[i], CultureInfo.InvariantCulture.NumberFormat), float.Parse(tabY[i], CultureInfo.InvariantCulture.NumberFormat), float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat));
+                        Debug.Log("Vec3 : " + float.Parse(tabX[i], CultureInfo.InvariantCulture.NumberFormat)+","+ float.Parse(tabY[i], CultureInfo.InvariantCulture.NumberFormat) + "," + float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat));
                     }
+                    maSpline.GetComponent<MeshCollider>().sharedMesh = maSpline.GetComponent<MeshFilter>().mesh;
+                    //mise a jour de la surface
+                    maSpline.GetComponent<Bspline>().Calc();
+                    //maSpline.GetComponent<MeshFilter>().mesh.RecalculateNormals();
+                    //mise a jour des lignes entre les pooints
+                    UpdateLines();
                 }
                 string replacement = Regex.Replace(data[9], @"\t|\n|\r", " ");
                 string[] cleanID = replacement.Split(' ');
@@ -384,30 +396,37 @@ public class TheController : MonoBehaviour {
     // Update is called once per frame
     void FixedUpdate()
    {
-
-        for (int i = 0 ; i < Const.m_NumberControlPoints ; i++) {
-            if(modified || maSpline.GetComponent<Bspline>().xcontr[i] != tab[i].transform.position.x) {
-                maSpline.GetComponent<Bspline>().xcontr[i] = tab[i].transform.position.x;
-                modified = true;
+        if (TCPController.hasToken)
+        {
+            for (int i = 0; i < Const.m_NumberControlPoints; i++)
+            {
+                if (modified || maSpline.GetComponent<Bspline>().xcontr[i] != tab[i].transform.position.x)
+                {
+                    maSpline.GetComponent<Bspline>().xcontr[i] = tab[i].transform.position.x;
+                    modified = true;
+                }
+                if (modified || maSpline.GetComponent<Bspline>().ycontr[i] != tab[i].transform.position.y)
+                {
+                    maSpline.GetComponent<Bspline>().ycontr[i] = tab[i].transform.position.y;
+                    modified = true;
+                }
+                if (modified || maSpline.GetComponent<Bspline>().zcontr[i] != tab[i].transform.position.z)
+                {
+                    maSpline.GetComponent<Bspline>().zcontr[i] = tab[i].transform.position.z;
+                    modified = true;
+                }
             }
-            if (modified || maSpline.GetComponent<Bspline>().ycontr[i] != tab[i].transform.position.y) {
-                maSpline.GetComponent<Bspline>().ycontr[i] = tab[i].transform.position.y;
-                modified = true;
-            }
-            if (modified || maSpline.GetComponent<Bspline>().zcontr[i] != tab[i].transform.position.z) {
-                maSpline.GetComponent<Bspline>().zcontr[i] = tab[i].transform.position.z;
-                modified = true;
+            if (modified)
+            {
+                Debug.Log("Modified - MAJ BSpline");
+                maSpline.GetComponent<MeshCollider>().sharedMesh = maSpline.GetComponent<MeshFilter>().mesh;
+                //mise a jour de la surface
+                maSpline.GetComponent<Bspline>().Calc();
+                //maSpline.GetComponent<MeshFilter>().mesh.RecalculateNormals();
+                //mise a jour des lignes entre les pooints
+                UpdateLines();
             }
         }
-        if (modified) {
-            maSpline.GetComponent<MeshCollider>().sharedMesh = maSpline.GetComponent<MeshFilter>().mesh;
-            //mise a jour de la surface
-            maSpline.GetComponent<Bspline>().Calc();
-            //maSpline.GetComponent<MeshFilter>().mesh.RecalculateNormals();
-            //mise a jour des lignes entre les pooints
-            UpdateLines();
-        }
-        
     }
     
 }
