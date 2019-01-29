@@ -292,7 +292,6 @@ public class TheController : MonoBehaviour {
                         }
                     } 
                 }
-                UserScrollViewIhm.UpdateUserList();
 
 
             }
