@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,6 +18,8 @@ public class TheController : MonoBehaviour {
     public TCPConnection myTCP;
     public GameObject player;
     private List<GameObject> users;
+    public static SortedList<int, GameObject> usersList;
+    public static int userHasToken;
     private float playerLastX;
     private float playerLastY;
     private float playerLastZ;
@@ -101,6 +104,7 @@ public class TheController : MonoBehaviour {
         transform.position = new Vector3(0.0f, 0.0f, 0.0f);
         // tranTampon = translation.transform.position;
         users = new List<GameObject>();
+        usersList = new SortedList<int, GameObject>();
         player = GameObject.Find("OVRPlayerController");
         Debug.Log("in Start : ");
         Debug.Log(TCPController.hasToken);
@@ -258,32 +262,42 @@ public class TheController : MonoBehaviour {
                 TCPController.UserId = Int32.Parse(data[1]);
                 Debug.Log("Id has been obtained");
             }
+            if (data[0] == "1")
+            {
+                //Player connected
+                int user = Int32.Parse(data[1]);
+                Debug.Log("user" + user + "isConnected");
+                usersList.Add(user, (GameObject)Instantiate(Resources.Load("Prefabs/User")));
+                UserScrollViewIhm.UpdateUserList();
+            }
+            if (data[0] == "2")
+            {
+                //Player disconnected
+                int user = Int32.Parse(data[1]);
+                Debug.Log("user" + user + "is disconnected");
+                usersList.Remove(user);
+                UserScrollViewIhm.UpdateUserList();
+            }
             if (Int32.Parse(data[0]) == 5)
             {
+                Debug.Log("Update summary");
                 int nbUser = Int32.Parse(data[1]);
                 int nbPt = Int32.Parse(data[2]);
                 string[] tabUserX = data[3].Split(',');
                 string[] tabUserY = data[4].Split(',');
                 string[] tabUserZ = data[5].Split(',');
-                for (int i = 0; i < nbUser; ++i)
+                for (int i = 0; i < nbUser && nbUser>1; ++i)
                 {
                     //Bouger l'utilisateur sauf si c'est lui
                     Debug.Log("update other user position");
-                    if (nbUser > users.Count)
+                    if(i == usersList.IndexOfKey(TCPController.UserId))
                     {
-                        for (int j = users.Count; j < nbUser; ++j)
-                        {
-                            users.Add((GameObject)Instantiate(Resources.Load("Prefabs/User")));
-                        }
-                    }
-                    if (i != TCPController.userId - 1)
-                    {
-                        users[i].transform.position = new Vector3(float.Parse(tabUserX[i], CultureInfo.InvariantCulture.NumberFormat),
+                        usersList[i].transform.position = new Vector3(float.Parse(tabUserX[i], CultureInfo.InvariantCulture.NumberFormat),
                             float.Parse(tabUserY[i], CultureInfo.InvariantCulture.NumberFormat),
                             float.Parse(tabUserZ[i], CultureInfo.InvariantCulture.NumberFormat));
                     }
                 }
-                if (!hasToken)
+                if (!TCPController.hasToken)
                 { // !hasToken No need to retreive sended BSpline coordonate
                     string[] tabX = data[6].Split(',');
                     string[] tabY = data[7].Split(',');
@@ -295,8 +309,21 @@ public class TheController : MonoBehaviour {
                         maSpline.GetComponent<Bspline>().zcontr[i] = float.Parse(tabZ[i], CultureInfo.InvariantCulture.NumberFormat);
                     }
                 }
-                Debug.Log("ID :" + data[9] + " has the token");
-                if (!hasToken && Int32.Parse(data[9]) == TCPController.UserId) TCPController.hasToken = true;
+                string replacement = Regex.Replace(data[9], @"\t|\n|\r", " ");
+                string[] cleanID = replacement.Split(' ');
+                //Debug.Log("replacement "+ cleanID);
+                //int j = 0;
+                //while (!Char.IsWhiteSpace(replacement[j++])) { };
+                
+                Debug.Log(" ID :" + Int32.Parse(cleanID[0]) + " has the token");
+                Debug.Log("Result from test +" + (Int32.Parse(cleanID[0]) == TCPController.UserId) + "userID=" + TCPController.UserId + "cleanID=" + Int32.Parse(cleanID[0]));
+
+                if (!TCPController.hasToken && Int32.Parse(cleanID[0]) == TCPController.UserId)
+                {
+                    TCPController.hasToken = true;
+                }else if (Int32.Parse(cleanID[0]) == TCPController.UserId){
+                    TCPController.hasToken = true;
+                }
                 else TCPController.hasToken = false;
             }
         }

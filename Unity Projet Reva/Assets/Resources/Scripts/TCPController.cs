@@ -15,6 +15,7 @@ public class TCPController : MonoBehaviour {
     private bool connecting = true;
     public static bool launch = false;
     public static System.Diagnostics.Process process;
+    public static int userHasToken;
     //public Canvas can;
     void Awake()
     {

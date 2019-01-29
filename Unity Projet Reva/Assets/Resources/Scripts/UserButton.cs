@@ -15,8 +15,8 @@ public class UserButton : MonoBehaviour {
     public void OnClickGetToken()
     {
         Debug.Log("Button user click ");
-        // envoie le token avec l'id de ce bouton
-        // fait tout ce qu'il faut pour changer le possesseur du token dans cette fonction
+        if (TCPController.hasToken) TCPController.ReturnToken();
+        else TCPController.RequestToken();
     }
     public int Id
     {
