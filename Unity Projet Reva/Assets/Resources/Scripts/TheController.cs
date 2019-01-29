@@ -165,7 +165,7 @@ public class TheController : MonoBehaviour {
     }
 
     //mise à jour des lignes entre les points de controle
-    void UpdateLines()
+    public void UpdateLines()
     {
         int ind = 0;
         for(int i = 0; i < Const.m_NumberControlPoints; i++)

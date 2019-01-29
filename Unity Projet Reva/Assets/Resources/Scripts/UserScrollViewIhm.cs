@@ -72,6 +72,12 @@ public class UserScrollViewIhm : MonoBehaviour {
                 newUserButton.colors = cb;
 
             }
+            if (TCPController.UserId == id)
+            {
+                ColorBlock cb = newUserButton.colors;
+                cb.normalColor = Color.blue;
+                newUserButton.colors = cb;
+            }
 
 
             newUserButton.GetComponentInChildren<Text>().text = "User " + id;

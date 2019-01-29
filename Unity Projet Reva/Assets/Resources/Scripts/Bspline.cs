@@ -33,9 +33,98 @@ public class Bspline : MonoBehaviour
     //uv du maillage
     Vector2[] uvs;
 
+    public void Restart()
+    {
+        //nombre de points en u et v
+        nu = nv = (int)Math.Sqrt(Const.m_NumberControlPoints);
+
+        //initialisation de points de contrôle par defaut
+        xcontr = new float[nu * nv];
+        ycontr = new float[nu * nv];
+        zcontr = new float[nu * nv];
+        /*ifstream points("points.pts", ios::in);
+		if (points)
+		{*/
+
+        using (TextReader reader = File.OpenText(Const.m_FileNameControlPoint))
+        {
+            string text = reader.ReadLine();
+            string[] bits = text.Split(' ');
+
+            for (int i = 0; i < nv; i++)
+                for (int j = 0; j < nu; j++)
+                    xcontr[j + i * nu] = float.Parse(bits[j + i * nu]);
+
+            text = reader.ReadLine();
+            bits = text.Split(' ');
+            for (int i = 0; i < nv; i++)
+                for (int j = 0; j < nu; j++)
+                    ycontr[j + i * nu] = float.Parse(bits[j + i * nu]);
+
+            text = reader.ReadLine();
+            bits = text.Split(' ');
+            for (int i = 0; i < nv; i++)
+                for (int j = 0; j < nu; j++)
+                    zcontr[j + i * nu] = float.Parse(bits[j + i * nu]);
+        }
+
+        /*for (int i = 0; i < 25; i++)
+            Debug.Log(String.Format("{0} {1} {2} \n", xcontr[i], ycontr[i], zcontr[i]));*/
+
+        /*points.close();
+    }*/
+
+        //nombre maximum de points calcules par axe u , vecteur
+        nmaxu = nmaxv = 20;
+
+        //ordre de la B-Spline en u et v
+        ku = kv = 4;
+
+        //points de la surface
+        vcal = new Vector3[nmaxu * nmaxv];
+
+        //initialisation des triangles du maillage
+        //triangles = new int[2 * (nmaxu - 1) * (nmaxv - 1) * 2 * 3];
+        triangles = new int[(nmaxu - 1) * (nmaxv - 1) * 2 * 3];
+
+        int ind = 0;
+
+        for (int i = 0; i < nmaxu * (nmaxv - 1); i++)
+        {
+            if (i % nmaxu != 0)
+            {
+                /*triangles[ind] = i;
+                triangles[ind + 1] = i + nmaxu - 1;
+                triangles[ind + 2] = i + nmaxu;*/
+                triangles[ind + 0] = i;
+                triangles[ind + 1] = i + nmaxu;
+                triangles[ind + 2] = i + nmaxu - 1;
+
+                /*Debug.Log(String.Format("f {0} {1} {2}", i, i + (nmaxu - 1) - 1, i + (nmaxu - 1)));
+                Debug.Log(String.Format("f {0} {1} {2}", i, i + (nmaxu - 1), i + (nmaxu - 1) - 1));*/
+
+                ind += 3;
+            }
+            if (i % nmaxu != (nmaxu - 1))
+            {
+                /*triangles[ind] = i;
+                triangles[ind + 1] = i + nmaxu;
+                triangles[ind + 2] = i + 1;*/
+                triangles[ind + 0] = i;
+                triangles[ind + 1] = i + 1;
+                triangles[ind + 2] = i + nmaxu;
+
+                /*Debug.Log(String.Format("f {0} {1} {2}", i, i + (nmaxu - 1), i + 1));
+                Debug.Log(String.Format("f {0} {1} {2}", i, i + 1, i + (nmaxu - 1)));*/
+
+                ind += 3;
+            }
+        }
+    }
+
     public void Start()
     {
-
+        
         //nombre de points en u et v
         nu = nv = (int)Math.Sqrt(Const.m_NumberControlPoints);
 
