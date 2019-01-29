@@ -105,7 +105,8 @@ public class TheController : MonoBehaviour {
         // tranTampon = translation.transform.position;
         users = new List<GameObject>();
         usersList = new SortedList<int, GameObject>();
-        player = GameObject.Find("OVRPlayerController");
+        if (Const.Controller == (int)Const.ControllerName.Oculus) player = GameObject.Find("OVRPlayerController");
+        else player = GameObject.Find("Camera");
         Debug.Log("in Start : ");
         Debug.Log(TCPController.hasToken);
         if (!TCPController.hasToken) modified = false;
@@ -393,6 +394,7 @@ public class TheController : MonoBehaviour {
                     TCPController.userHasToken = Int32.Parse(cleanID[0]);
                     SetActiveGrabScript(false);
                 }
+                UserScrollViewIhm.UpdateUserList();
             }
         }
     }
