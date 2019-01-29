@@ -13,6 +13,7 @@ public class MenuHandler : MonoBehaviour
     private void Start()
     {
         m_ServerNameText = GameObject.Find("ServerInput").GetComponent<InputField>();
+        Cursor.visible = true;
     }
 
     public void OnPlayClick()
@@ -30,7 +31,7 @@ public class MenuHandler : MonoBehaviour
     public void HostServer() {
         Debug.Log("Hosting server on port 5000");
         //We wait the server before logging in
-        //StartCoroutine(TCPController.StartServer());
+        StartCoroutine(TCPController.StartServer());
         TCPController.Ip = "127.0.0.1";
         TCPController.Port = 25128;
         TCPController.userId = 1;
@@ -62,7 +63,7 @@ public class MenuHandler : MonoBehaviour
     }
     private void OnDestroy()
     {
-        if (!TCPController.launch) TCPController.process.Kill();
+        if (!TCPController.launch && !TCPController.myTCP.socketReady) TCPController.process.Kill();
     }
 
 }
