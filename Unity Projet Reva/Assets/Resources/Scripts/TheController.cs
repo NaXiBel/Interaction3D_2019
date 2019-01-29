@@ -258,9 +258,39 @@ public class TheController : MonoBehaviour {
             data = serverSays.Split(';');
             if (data[0] == "0")
             {
-                //First update : 0;id;posx;posy;posz
-                TCPController.UserId = Int32.Parse(data[1]);
-                Debug.Log("Id has been obtained");
+                if (!TCPController.isIdObtained)
+                {
+                    //First update : 0;id;posx;posy;posz
+                    TCPController.UserId = Int32.Parse(data[1]);
+                    Debug.Log("Id has been obtained");
+                    TCPController.isIdObtained = true;
+                    usersList.Add(TCPController.UserId, null);
+
+                }
+                //data[2],data[3],data[4] are positions
+                //data[5] = id1,id2,id3,id4
+                string[] ids = data[5].Split(',');
+                Debug.Log("ids length : " + ids.Length + "ids : " + ids);
+                for(int j = 0; j < ids.Length; ++j)
+                {
+                    Debug.Log("ids[j] : " + ids[j]);
+                    int parsedId = Int32.Parse(ids[j]);
+                    if (TCPController.UserId != parsedId)
+                    {
+                        //Si c'est pas le meme
+                        Debug.Log("About to create User : " + parsedId);
+                        if (!usersList.ContainsKey(parsedId))
+                        {
+                            Debug.Log("Create User : " + parsedId);
+                            GameObject tmp = (GameObject)Instantiate(Resources.Load("Prefabs/User"));
+                            usersList.Add(parsedId, tmp);
+                            Debug.Log("GameObject tmp :" + tmp);
+                        }
+                    } 
+                }
+                UserScrollViewIhm.UpdateUserList();
+
+
             }
             if (data[0] == "1")
             {
@@ -275,6 +305,10 @@ public class TheController : MonoBehaviour {
                 //Player disconnected
                 int user = Int32.Parse(data[1]);
                 Debug.Log("user" + user + "is disconnected");
+                foreach (KeyValuePair<int, GameObject> kvp in usersList)
+                {
+                    if (kvp.Key == user) Destroy(kvp.Value);
+                }
                 usersList.Remove(user);
                 UserScrollViewIhm.UpdateUserList();
             }
@@ -286,16 +320,25 @@ public class TheController : MonoBehaviour {
                 string[] tabUserX = data[3].Split(',');
                 string[] tabUserY = data[4].Split(',');
                 string[] tabUserZ = data[5].Split(',');
+                
                 for (int i = 0; i < nbUser && nbUser>1; ++i)
                 {
-                    //Bouger l'utilisateur sauf si c'est lui
+                    
                     Debug.Log("update other user position");
-                    if(i == usersList.IndexOfKey(TCPController.UserId))
+                    IList<GameObject> ilistValues = usersList.Values;
+                    if (i != usersList.IndexOfKey(TCPController.UserId))
                     {
-                        usersList[i].transform.position = new Vector3(float.Parse(tabUserX[i], CultureInfo.InvariantCulture.NumberFormat),
-                            float.Parse(tabUserY[i], CultureInfo.InvariantCulture.NumberFormat),
-                            float.Parse(tabUserZ[i], CultureInfo.InvariantCulture.NumberFormat));
+                        Debug.Log("Updating id : " + i);
+                        ilistValues[i].transform.position = new Vector3(float.Parse(tabUserX[i], CultureInfo.InvariantCulture.NumberFormat),
+                              float.Parse(tabUserY[i], CultureInfo.InvariantCulture.NumberFormat),
+                              float.Parse(tabUserZ[i], CultureInfo.InvariantCulture.NumberFormat));
                     }
+                    /*
+                    foreach (KeyValuePair<int, GameObject> kvp in usersList)
+                    {
+                        
+                    }
+                    */
                 }
                 if (!TCPController.hasToken)
                 { // !hasToken No need to retreive sended BSpline coordonate

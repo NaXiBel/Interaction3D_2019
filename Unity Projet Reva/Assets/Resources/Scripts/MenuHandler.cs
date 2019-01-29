@@ -48,6 +48,7 @@ public class MenuHandler : MonoBehaviour
         string[] data = m_ServerNameText.text.Split(':');
         if (data.Length == 2)
         {
+            Debug.Log("Adresse " + data[0] + " port :" + int.Parse(data[1]));
             TCPController.Ip = data[0];
             TCPController.Port = int.Parse(data[1]);
             TCPController.UserId = -1;

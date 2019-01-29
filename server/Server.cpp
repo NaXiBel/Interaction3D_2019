@@ -55,9 +55,9 @@ Server::Server(const int & _port)
 					// On ajoute l'utilisateur à la liste des connectés.
 					nbUser++;
 					sessions.insert(std::pair<unsigned int, SOCKET>(nbUser, userSocket));
-					tabUserX.push_back(0);
-					tabUserY.push_back(0);
-					tabUserZ.push_back(0);
+					tabUserX.push_back(0.0f);
+					tabUserY.push_back(0.0f);
+					tabUserZ.push_back(0.0f);
 					std::thread userThread = std::thread(listenUser, nbUser);
 					userThread.detach();
 					isVisited = true;
@@ -90,7 +90,14 @@ void Server::listenUser(unsigned int _id)
 	int r = 0;
 	SOCKET _socket = sessions[_id];
 	std::stringstream data;
-	data << "0;" << _id << ";" << tabUserX[_id] << ";" << tabUserY[_id] << ";" <<tabUserZ[_id] << std::endl;
+	data << "0;" << _id << ";" << tabUserX[_id] << ";" << tabUserY[_id] << ";" <<tabUserZ[_id] << ";";
+	for (std::map<unsigned int, SOCKET>::iterator it = sessions.begin(); it != sessions.end(); ++it)
+	{
+		data << it->first;
+		std::map<unsigned int, SOCKET>::iterator it2 = it;
+		if (++it2 != sessions.end())data << ",";
+		else data << std::endl;
+	}
 	std::cout << data.str();
 	sendAll(data.str());
 	while((r = recv(_socket, buffer, BUFLEN - 1, 0)) != 0) {
@@ -165,8 +172,8 @@ void Server::disconnectUser(unsigned int _id)
 	std::cout << "Clients connectés: " << sessions.size() <<std::endl;
 	releaseToken(_id);
 	std::stringstream buffer;
-	buffer << "Client " << _id << " déconnecté." << std::endl;
-	std::cout << buffer.str();
+	buffer << "2;" << _id << ";" << std::endl;
+	std::cout << "Client " << _id << " déconnecté." << std::endl;
 	sendAll(buffer.str());
 }
 
@@ -182,8 +189,8 @@ void Server::releaseToken(unsigned int _id)
 	if(tokenId == _id) {
 		tokenId = 0;
 		std::cout << "Le token est désormais libre." << std::endl;
+		sendAll(getSummary());
 	}
-	sendAll(getSummary());
 }
 
 void Server::sendAll(std::string buffer)

@@ -14,6 +14,7 @@ public class UserScrollViewIhm : MonoBehaviour {
         m_UserNames.Add(2, "User 2"); // TEST
         m_UserNames.Add(3, "User 3"); // TEST
         int cpt = 0;
+        /*
         foreach (int id in TheController.usersList.Keys)
         {
             GameObject newUser = (GameObject)Instantiate(Resources.Load("Prefabs/BT_Username"), Vector3.zero, Quaternion.identity);
@@ -37,6 +38,7 @@ public class UserScrollViewIhm : MonoBehaviour {
             newUser.GetComponent<UserButton>().Username = m_UserNames[id];
             ++cpt;
         }
+        */
     }
 	
 	// Update is called once per frame

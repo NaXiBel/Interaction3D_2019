@@ -16,6 +16,7 @@ public class TCPController : MonoBehaviour {
     public static bool launch = false;
     public static System.Diagnostics.Process process;
     public static int userHasToken;
+    public static bool isIdObtained = false;
     //public Canvas can;
     void Awake()
     {
@@ -45,21 +46,53 @@ public class TCPController : MonoBehaviour {
                     myTCP.setupSocket();
                     Debug.Log("connected");
                 }
-                string serverSays = myTCP.readSocket();
+                launch = false;
+                /*string serverSays = myTCP.readSocket();
                 String[] data;
                 Debug.Log("serverSays " + serverSays);
+                Debug.Log("launch " + launch);
                 if (serverSays != "")
+
                 {
-                    //            Debug.Log("[SERVER]" + serverSays);
                     data = serverSays.Split(';');
-                    //int periph = Int32.Parse(data[0]);
+                    if (data[0] == "0")
+                    {
+                        if (!TCPController.isIdObtained)
+                        {
+                            //First update : 0;id;posx;posy;posz
+                            TCPController.UserId = Int32.Parse(data[1]);
+                            Debug.Log("Id has been obtained");
+                            TCPController.isIdObtained = true;
+                            TheController.usersList.Add(TCPController.UserId, null);
 
-
-                //              DontDestroyOnLoad(this.can);
-                //      SceneManager.LoadScene(1);
-                launch = false;
-                //SceneManager.LoadScene(periph);
-                }
+                        }
+                        //data[2],data[3],data[4] are positions
+                        //data[5] = id1,id2,id3,id4
+                        string[] ids = data[5].Split(',');
+                        Debug.Log("ids length : " + ids.Length + "ids : " + ids);
+                        for (int j = 0; j < ids.Length; ++j)
+                        {
+                            Debug.Log("ids[j] : " + ids[j]);
+                            int parsedId = Int32.Parse(ids[j]);
+                            if (TCPController.UserId != parsedId)
+                            {
+                                //Si c'est pas le meme
+                                Debug.Log("About to create User : " + parsedId);
+                                if (!TheController.usersList.ContainsKey(parsedId))
+                                {
+                                    Debug.Log("Create User : " + parsedId);
+                                    GameObject tmp = (GameObject)Instantiate(Resources.Load("Prefabs/User"));
+                                    TheController.usersList.Add(parsedId, tmp);
+                                    Debug.Log("GameObject tmp :" + tmp);
+                                }
+                            }
+                        }
+                        UserScrollViewIhm.UpdateUserList();
+                        
+                    }
+                    TCPController.launch = false;
+                    Debug.Log("launch 2 " + launch);
+                }*/
             }
             catch (Exception e)
             {
