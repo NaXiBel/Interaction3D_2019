@@ -17,6 +17,7 @@ public class UserButton : MonoBehaviour {
         Debug.Log("Button user click ");
         if (TCPController.hasToken) TCPController.ReturnToken();
         else TCPController.RequestToken();
+        UserScrollViewIhm.UpdateUserList();
     }
     public int Id
     {
