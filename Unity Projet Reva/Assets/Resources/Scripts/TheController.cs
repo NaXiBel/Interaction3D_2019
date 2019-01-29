@@ -387,14 +387,20 @@ public class TheController : MonoBehaviour {
                 {
                     TCPController.hasToken = true;
                     TCPController.userHasToken = TCPController.UserId;
+                    UserScrollViewIhm.UpdateUserList();
                 }
-                else
+                else if(TCPController.hasToken && Int32.Parse(cleanID[0]) != TCPController.UserId)
                 {
                     TCPController.hasToken = false;
                     TCPController.userHasToken = Int32.Parse(cleanID[0]);
                     SetActiveGrabScript(false);
+                    UserScrollViewIhm.UpdateUserList();
                 }
-                UserScrollViewIhm.UpdateUserList();
+                else
+                {
+                    TCPController.userHasToken = Int32.Parse(cleanID[0]);
+                }
+                
             }
         }
     }
