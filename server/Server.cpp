@@ -138,7 +138,7 @@ void Server::listenUser(unsigned int _id)
 					std::stringstream tmp(stabX[i]);
 					float tmpf;
 					tmp >> tmpf;
-					std::cout << "val x :" << stabX[i] << std::endl << std::flush;
+					//std::cout << "val x :" << stabX[i] << std::endl << std::flush;
 					spline.tabX[i] = tmpf;
 					spline.tabY[i] = std::atof(stabY[i].c_str());
 					spline.tabZ[i] = std::atof(stabZ[i].c_str());
@@ -289,24 +289,24 @@ void Server::parseTab(std::string _s, std::vector<std::string> &_v)
 	int i = 0;
 	std::string acc = "";
 	char c;
-	std::cout << "VEC{"<<_s << "}"<< std::endl;
-	std::cout << _v.size() << std::endl; 
+	//std::cout << "VEC{"<<_s << "}"<< std::endl;
+	//std::cout << _v.size() << std::endl; 
 	while((i < _s.length()) && (i < BUFLEN)) {
 		c = _s[i];
 		if((c == '\n') || (c == '\0')) {
 			if(!acc.empty()) {
-				std::cout << "cc retour" << std::endl;
+				//std::cout << "cc retour" << std::endl;
 				_v.push_back(acc);
 			}
 			break;
 		} else if((c == ',')) {
 			if(!acc.empty()) {
-				std::cout << "cc virgule" << std::endl;
+				//std::cout << "cc virgule" << std::endl;
 				_v.push_back(acc);
 				acc.clear();
 			}
 		} else {
-			std::cout << "cc accu" << std::endl;
+			//std::cout << "cc accu" << std::endl;
 			acc = acc + c;
 		}
 		i++;
@@ -322,5 +322,5 @@ void Server::parseTab(std::string _s, std::vector<std::string> &_v)
 		ss << _v[i];
 	}
 	std::string s = ss.str();
-	std::cout << "stab[" << s <<"]" <<std::endl;
+	//std::cout << "stab[" << s <<"]" <<std::endl;
 }
