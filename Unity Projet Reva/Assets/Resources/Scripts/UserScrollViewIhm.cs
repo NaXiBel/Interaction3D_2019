@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UserScrollViewIhm : MonoBehaviour {
-    public static GameObject m_ScrollVIew;
+    public GameObject m_ScrollVIew;
+    public static GameObject m_ScrollViewSt;
     public GameObject m_Panel;
     private Dictionary<int, string> m_UserNames; // Remplace par ton tableau 
     // Use this for initialization
@@ -14,6 +15,7 @@ public class UserScrollViewIhm : MonoBehaviour {
         m_UserNames.Add(2, "User 2"); // TEST
         m_UserNames.Add(3, "User 3"); // TEST
         int cpt = 0;
+        m_ScrollViewSt = m_ScrollVIew;
         /*
         foreach (int id in TheController.usersList.Keys)
         {
@@ -59,7 +61,7 @@ public class UserScrollViewIhm : MonoBehaviour {
             GameObject newUser = (GameObject)Instantiate(Resources.Load("Prefabs/BT_Username"), Vector3.zero, Quaternion.identity);
             Button newUserButton = newUser.GetComponent<Button>();
 
-            newUserButton.GetComponentInChildren<RectTransform>().SetParent(UserScrollViewIhm.m_ScrollVIew.transform, false);
+            newUserButton.GetComponentInChildren<RectTransform>().SetParent(UserScrollViewIhm.m_ScrollViewSt.transform, false);
 
             newUserButton.GetComponentInChildren<RectTransform>().anchoredPosition = new Vector2(-122f, 88f - 60f * cpt);
             // active c'est ligne avec la bonne condition, pour que le maître soit activé d'un couleur différente. 
