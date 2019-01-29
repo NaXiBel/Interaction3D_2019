@@ -114,7 +114,7 @@ public class TheController : MonoBehaviour {
         playerLastX = 0.0f;
         playerLastY = 0.0f;
         playerLastZ = 0.0f;
-        InvokeRepeating("SocketResponse", 0f, 0.01f);  //1s delay, repeat every 1s
+        InvokeRepeating("SocketResponse", 0f, 0.5f);  //1s delay, repeat every 1s
 
 
         //if (Const.Controller == (int)Const.ControllerName.LeapMotion){
@@ -292,7 +292,6 @@ public class TheController : MonoBehaviour {
                         }
                     } 
                 }
-                UserScrollViewIhm.UpdateUserList();
 
 
             }
@@ -382,19 +381,20 @@ public class TheController : MonoBehaviour {
                     TCPController.hasToken = true;
                     TCPController.userHasToken = TCPController.UserId;
                     SetActiveGrabScript(true);
-                }
-                else if (Int32.Parse(cleanID[0]) == TCPController.UserId)
-                {
-                    TCPController.hasToken = true;
-                    TCPController.userHasToken = TCPController.UserId;
                     UserScrollViewIhm.UpdateUserList();
                 }
-                else if(TCPController.hasToken && Int32.Parse(cleanID[0]) != TCPController.UserId)
+                else if (TCPController.hasToken && Int32.Parse(cleanID[0]) != TCPController.UserId)
                 {
                     TCPController.hasToken = false;
                     TCPController.userHasToken = Int32.Parse(cleanID[0]);
                     SetActiveGrabScript(false);
                     UserScrollViewIhm.UpdateUserList();
+                }
+                else if (Int32.Parse(cleanID[0]) == TCPController.UserId)
+                {
+                    TCPController.hasToken = true;
+                    TCPController.userHasToken = TCPController.UserId;
+                    
                 }
                 else
                 {
