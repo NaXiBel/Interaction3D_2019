@@ -6,8 +6,9 @@
 #include <thread>
 #include <vector>
 #define BUFLEN 4096
-#ifdef __WIN32__
+#ifdef _WIN32
 	#include <winsock2.h>
+	#include "stdafx.h"
 	#pragma comment(lib, "ws2_32.lib")
 	typedef int socklen_t;
 #else
