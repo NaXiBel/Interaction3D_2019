@@ -116,8 +116,10 @@ public class TCPController : MonoBehaviour {
     {
         process = new System.Diagnostics.Process();
         System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-        // DEBUG startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+        //DEBUG startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
         startInfo.FileName = Application.dataPath + "/server.exe";
+        Debug.Log(Application.dataPath + "/server.exe");
         process.StartInfo = startInfo;
         process.Start();
         yield return new WaitForSeconds(10);
