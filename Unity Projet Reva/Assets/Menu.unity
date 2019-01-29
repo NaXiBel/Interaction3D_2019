@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311992, g: 0.38074034, b: 0.35872713, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -750,7 +750,9 @@ MonoBehaviour:
   go: {fileID: 0}
   Bspline: {fileID: 0}
   hasToken: 0
+  modified: 0
   myTCP: {fileID: 0}
+  player: {fileID: 0}
 --- !u!4 &385555105
 Transform:
   m_ObjectHideFlags: 0
@@ -3713,7 +3715,7 @@ GameObject:
   - component: {fileID: 1770924425}
   - component: {fileID: 1770924424}
   m_Layer: 5
-  m_Name: Text
+  m_Name: ServerNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4094,7 +4096,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2074052712
 GameObject:
