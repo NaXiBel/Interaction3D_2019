@@ -245,7 +245,11 @@ public class TheController : MonoBehaviour {
         //retreive 
         string serverSays = myTCP.readSocket();
         if (serverSays != "") {
-            UpdateFromServer(serverSays);
+            string[] str = serverSays.Split('\n');
+            foreach (string s in str)
+            {
+                UpdateFromServer(serverSays);
+            } 
         }
         
     }
