@@ -110,8 +110,7 @@ public class TCPController : MonoBehaviour {
     private void OnDestroy()
     {
         myTCP.closeSocket();
-
-        process.Kill();
+        if(TCPController.isHosting)process.Kill();
     }
 
     public static IEnumerator StartServer()
