@@ -328,7 +328,7 @@ public class TheController : MonoBehaviour {
                 string[] tabUserY = data[4].Split(',');
                 string[] tabUserZ = data[5].Split(',');
                 
-                for (int i = 0; i < usersList.Count && usersList.Count > 1; ++i)
+                for (int i = 0; i < nbUser && usersList.Count > 1; ++i)
                 {
                     
                     Debug.Log("update other user position");
