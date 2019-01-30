@@ -301,7 +301,7 @@ public class TheController : MonoBehaviour {
                 int user = Int32.Parse(data[1]);
                 Debug.Log("user" + user + "isConnected");
                 usersList.Add(user, (GameObject)Instantiate(Resources.Load("Prefabs/User")));
-                UserScrollViewIhm.UpdateUserList();
+                //UserScrollViewIhm.UpdateUserList();
             }
             if (data[0] == "2")
             {
@@ -313,7 +313,7 @@ public class TheController : MonoBehaviour {
                     if (kvp.Key == user) Destroy(kvp.Value);
                 }
                 usersList.Remove(user);
-                UserScrollViewIhm.UpdateUserList();
+                //UserScrollViewIhm.UpdateUserList();
             }
             if (Int32.Parse(data[0]) == 5)
             {
@@ -381,14 +381,14 @@ public class TheController : MonoBehaviour {
                     TCPController.hasToken = true;
                     TCPController.userHasToken = TCPController.UserId;
                     SetActiveGrabScript(true);
-                    UserScrollViewIhm.UpdateUserList();
+                    //UserScrollViewIhm.UpdateUserList();
                 }
                 else if (TCPController.hasToken && Int32.Parse(cleanID[0]) != TCPController.UserId)
                 {
                     TCPController.hasToken = false;
                     TCPController.userHasToken = Int32.Parse(cleanID[0]);
                     SetActiveGrabScript(false);
-                    UserScrollViewIhm.UpdateUserList();
+                    //UserScrollViewIhm.UpdateUserList();
                 }
                 else if (Int32.Parse(cleanID[0]) == TCPController.UserId)
                 {

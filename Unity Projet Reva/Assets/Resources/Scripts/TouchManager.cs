@@ -36,6 +36,7 @@ public class TouchManager : MonoBehaviour {
         {
             m_Menu.GetComponent<Canvas>().enabled = true;
             m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y - 0.5f, m_Camera.transform.position.z + 1f);
+            UserScrollViewIhm.UpdateUserList();
         }
         if (this.m_State == SelectionStates.NONE) {
 

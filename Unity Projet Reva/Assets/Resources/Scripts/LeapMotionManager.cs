@@ -126,6 +126,7 @@ public class LeapMotionManager : MonoBehaviour {
         {
             m_Menu.GetComponent<Canvas>().enabled = true;
             m_Menu.transform.position = new Vector3(m_Camera.transform.position.x, m_Camera.transform.position.y, m_Camera.transform.position.z + 0.3f);
+            UserScrollViewIhm.UpdateUserList();
         }
        // Debug.Log(Mathf.Abs(Vector3.Angle(HLPositionPalm, HRPositionPalm)));
     }
