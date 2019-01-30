@@ -328,15 +328,15 @@ public class TheController : MonoBehaviour {
                 string[] tabUserY = data[4].Split(',');
                 string[] tabUserZ = data[5].Split(',');
                 
-                for (int i = 0; i < nbUser && usersList.Count > 1; ++i)
+                for (int i = 0; i < usersList.Count && nbUser>1; ++i)
                 {
                     
                     Debug.Log("update other user position");
                     IList<GameObject> ilistValues = usersList.Values;
-                    if (i != usersList.IndexOfKey(TCPController.UserId) && usersList.ContainsKey(i))
+                    if (i != usersList.IndexOfKey(TCPController.UserId))
                     {
                         Debug.Log("Updating id from key: " + i);
-                        ilistValues[usersList.IndexOfKey(i)].transform.position = new Vector3(float.Parse(tabUserX[i], CultureInfo.InvariantCulture.NumberFormat),
+                        ilistValues[i].transform.position = new Vector3(float.Parse(tabUserX[i], CultureInfo.InvariantCulture.NumberFormat),
                               float.Parse(tabUserY[i], CultureInfo.InvariantCulture.NumberFormat),
                               float.Parse(tabUserZ[i], CultureInfo.InvariantCulture.NumberFormat));
                     }
