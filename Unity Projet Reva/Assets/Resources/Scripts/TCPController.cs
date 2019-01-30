@@ -17,6 +17,7 @@ public class TCPController : MonoBehaviour {
     public static System.Diagnostics.Process process;
     public static int userHasToken;
     public static bool isIdObtained = false;
+    public static bool isHosting = false;
     //public Canvas can;
     void Awake()
     {
@@ -109,6 +110,7 @@ public class TCPController : MonoBehaviour {
     private void OnDestroy()
     {
         myTCP.closeSocket();
+
         process.Kill();
     }
 

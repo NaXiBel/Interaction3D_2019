@@ -32,6 +32,7 @@ public class MenuHandler : MonoBehaviour
         Debug.Log("Hosting server on port 5000");
         //We wait the server before logging in
         StartCoroutine(TCPController.StartServer());
+        TCPController.isHosting = true;
         TCPController.Ip = "127.0.0.1";
         TCPController.Port = 25128;
         TCPController.userId = 1;
@@ -50,6 +51,7 @@ public class MenuHandler : MonoBehaviour
         if (data.Length == 2)
         {
             Debug.Log("Adresse " + data[0] + " port :" + int.Parse(data[1]));
+            TCPController.isHosting = false;
             TCPController.Ip = data[0];
             TCPController.Port = int.Parse(data[1]);
             TCPController.UserId = -1;
@@ -63,7 +65,7 @@ public class MenuHandler : MonoBehaviour
     }
     private void OnDestroy()
     {
-        if (!TCPController.launch && !TCPController.myTCP.socketReady) TCPController.process.Kill();
+        if (!TCPController.launch && !TCPController.myTCP.socketReady && TCPController.isHosting) TCPController.process.Kill();
     }
 
 }
