@@ -80,9 +80,9 @@ public class UserScrollViewIhm : MonoBehaviour {
             }
 
 
-            newUserButton.GetComponentInChildren<Text>().text = "User " + id;
+            newUserButton.GetComponentInChildren<Text>().text = "User_" + id;
             newUser.GetComponent<UserButton>().Id = id;
-            newUser.GetComponent<UserButton>().Username = "User " + id;
+            newUser.GetComponent<UserButton>().Username = "User_" + id;
             ++cpt;
         }
     }
